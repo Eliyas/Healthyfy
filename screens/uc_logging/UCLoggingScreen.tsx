@@ -4,8 +4,8 @@ import styled from "styled-components/native";
 import { FadeInRight } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
-import { TextInput} from 'react-native';
-import _ from 'lodash';
+import { TextInput } from "react-native";
+import _ from "lodash";
 import {
   DateTimePicker,
   RadioGroup,
@@ -17,6 +17,7 @@ import {
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
 import { generateUUID } from "../../utils";
+import { ScrollView } from "react-native-gesture-handler";
 
 const config: any = {
   mode: "horizontal-stack",
@@ -38,6 +39,7 @@ export default function UCLoggingScreen() {
   const [blood, setBlood] = useState("");
   const [gas, setGas] = useState("");
   const [pain, setPain] = useState("");
+  const [testValue, setTestValue] = useState("");
   const [nausea, setNausea] = useState("");
   const [tags, setTags] = useState([
     { id: generateUUID(), label: "Walk", isChecked: false },
@@ -97,80 +99,6 @@ export default function UCLoggingScreen() {
     );
   };
 
-  const TagField = ({
-    label,
-    tags,
-    setValue,
-    setEditMode,
-    isEditMode,
-    handleTagRemove,
-    handleTagAdd,
-    handleTagValueChange,
-  }: any) => {
-    return (
-      <View style={{ height: 280, overflow: "hidden" }}>
-        <View style={{ flexDirection: "row" }}>
-          <Text text70 style={{ marginBottom: 13, marginRight: 20 }}>
-            {label}
-          </Text>
-          <FontAwesome
-            onPress={() => setEditMode(!isEditMode)}
-            name="edit"
-            size={21}
-            color="black"
-            style={{ marginTop: 5 }}
-          />
-        </View>
-
-        {tags.map((tag: any, index: number) => (
-          <View style={{ flexDirection: "row" }}  id={tag.id} key={tag.id}>
-            <Checkbox
-              style={{ marginBottom: 13, marginRight: 10 }}
-              value={tag.isChecked}
-              onValueChange={() => setValue(tag)}
-            />
-            {isEditMode && index == tags.length - 1 ? (
-              <TextInput
-                style={{ marginRight: 10 }}
-                placeholder={"Tag Name"}
-                value={tag.label}
-                onChangeText={(currentValue) => {
-                  _.throttle(() => {
-                    console.log("Trottel");
-                    handleTagValueChange(currentValue, tag)
-                  }, 100);
-                  
-                }}
-              />
-            ) : (
-              <Text text80 style={{ marginRight: 10 }}>
-                {" "}
-                {tag.label}{" "}
-              </Text>
-            )}
-
-            {isEditMode && index + 1 == tags.length && (
-              <AntDesign
-                onPress={() => handleTagAdd()}
-                name="pluscircleo"
-                size={24}
-                color="black"
-              />
-            )}
-            {isEditMode && index < tags.length - 1 && (
-              <AntDesign
-                onPress={() => handleTagRemove(tag.id)}
-                name="minuscircleo"
-                size={21}
-                color="black"
-              />
-            )}
-          </View>
-        ))}
-      </View>
-    );
-  };
-
   const handleTagChange = (tag: any) => {
     tag.isChecked = !tag.isChecked;
     setTags([...tags]);
@@ -190,7 +118,7 @@ export default function UCLoggingScreen() {
   };
 
   const handleTagValueChange = (value: string, tag: any) => {
-    console.log("ch value "+ value);
+    console.log("ch value " + value);
     tag.label = value;
     setTags([...tags]);
   };
@@ -275,18 +203,7 @@ export default function UCLoggingScreen() {
     {
       id: 11,
       label: FieldLabelType.Tag,
-      fieldComponent: (label: string) => (
-        <TagField
-          label={label}
-          tags={tags}
-          setValue={handleTagChange}
-          isEditMode={isTagEditMode}
-          setEditMode={setIsTagEditMode}
-          handleTagRemove={handleTagRemove}
-          handleTagAdd={handleTagAdd}
-          handleTagValueChange={handleTagValueChange}
-        />
-      ),
+      fieldComponent: null
     },
   ];
 
@@ -319,31 +236,123 @@ export default function UCLoggingScreen() {
           }}
           customConfig={() => ({ type: "positive", viewCount })}
           renderItem={({ item }) => (
+
             <View>
-              <Card
-                activeOpacity={1}
-                enableShadow={true}
-                style={{
-                  height: 300,
-                  elevation: 10,
-                  shadowColor: "#52006A",
-                  shadowOpacity: 0.2,
-                  shadowRadius: 3,
-                  width: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                enableBlur={false}
-                paddingH-10
-                paddingV-20
-                key={item.id}
-                onPress={() => console.log("pressed")}
-              >
-                {item.fieldComponent(item.label)}
-              </Card>
+              {item.label != FieldLabelType.Tag ? (
+
+                <Card
+                  activeOpacity={1}
+                  enableShadow={true}
+                  style={{
+                    height: 300,
+                    elevation: 10,
+                    shadowColor: "#52006A",
+                    shadowOpacity: 0.2,
+                    shadowRadius: 3,
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  enableBlur={false}
+                  paddingH-10
+                  paddingV-20
+                  key={item.id}
+                  onPress={() => console.log("pressed")}
+                >
+                  {item.fieldComponent(item.label)}
+                </Card>
+
+              ) : (
+
+                <Card
+                  activeOpacity={1}
+                  enableShadow={true}
+                  style={{
+                    height: 300,
+                    elevation: 10,
+                    shadowColor: "#52006A",
+                    shadowOpacity: 0.2,
+                    shadowRadius: 3,
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  enableBlur={false}
+                  paddingH-10
+                  paddingV-20
+                  key={item.id}
+                  onPress={() => console.log("pressed")}
+                >
+                  <ScrollView style={{ height: 280 }}>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        text70
+                        style={{ marginBottom: 13, marginRight: 20 }}
+                      >
+                        {item.label}
+                      </Text>
+                      <FontAwesome
+                        onPress={() => setIsTagEditMode(!isTagEditMode)}
+                        name="edit"
+                        size={21}
+                        color="black"
+                        style={{ marginTop: 5 }}
+                      />
+                    </View>
+
+                    {tags.map((tag: any, index: number) => (
+                      <View
+                        style={{ flexDirection: "row" }}
+                        id={tag.id}
+                        key={tag.id}
+                      >
+                        <Checkbox
+                          style={{ marginBottom: 13, marginRight: 10 }}
+                          value={tag.isChecked}
+                          onValueChange={() => setTestValue(tag)}
+                        />
+                        {isTagEditMode && index == tags.length - 1 ? (
+                          <TextInput
+                            style={{ marginRight: 10, marginBottom: 5 }}
+                            placeholder={"Tag Name"}
+                            value={tag.label}
+                            onChangeText={(currentValue) =>
+                              handleTagValueChange(currentValue, tag)
+                            }
+                          />
+                        ) : (
+                          <Text text80 style={{ marginRight: 10 }}>
+                            {" "}
+                            {tag.label}{" "}
+                          </Text>
+                        )}
+
+                        {isTagEditMode && index + 1 == tags.length && (
+                          <AntDesign
+                            onPress={() => handleTagAdd()}
+                            name="pluscircleo"
+                            size={24}
+                            color="black"
+                          />
+                        )}
+                        {isTagEditMode && index < tags.length - 1 && (
+                          <AntDesign
+                            onPress={() => handleTagRemove(tag.id)}
+                            name="minuscircleo"
+                            size={21}
+                            color="black"
+                          />
+                        )}
+                      </View>
+                    ))}
+                  </ScrollView>
+                </Card>
+              )}
+
             </View>
           )}
         />
+
         <View
           style={{
             flexDirection: "row",
