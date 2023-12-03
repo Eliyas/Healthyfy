@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import { FadeInRight } from "react-native-reanimated";
@@ -14,6 +14,9 @@ import {
   Card,
   RadioButton,
   Checkbox,
+  Button,
+  Colors,
+  TextField,
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
 import { generateUUID } from "../../utils";
@@ -39,7 +42,6 @@ export default function UCLoggingScreen() {
   const [blood, setBlood] = useState("");
   const [gas, setGas] = useState("");
   const [pain, setPain] = useState("");
-  const [testValue, setTestValue] = useState("");
   const [nausea, setNausea] = useState("");
   const [tags, setTags] = useState([
     { id: generateUUID(), label: "Walk", isChecked: false },
@@ -48,6 +50,19 @@ export default function UCLoggingScreen() {
     { id: generateUUID(), label: "Sport", isChecked: false },
   ]);
   const [isTagEditMode, setIsTagEditMode] = useState(false);
+  const carouselRef: any = useRef();
+
+  useEffect(() => {
+    if(carouselRef.current) {
+      setTimeout(() => {
+        if(carouselRef.current) carouselRef.current.next();
+      }, 2000);
+    }
+  }, [date, time, urgency, consistency, spray, volume, blood, gas, pain, nausea ]);
+
+  const nextCard = () => {
+    
+  }
 
   const DateField = ({ label, value, setValue }: any) => {
     return (
@@ -55,7 +70,7 @@ export default function UCLoggingScreen() {
         <Text text70>{label}</Text>
         <DateTimePicker
           value={value}
-          onChange={(currentValue) => setValue(currentValue)}
+          onChange={(currentValue) => {setValue(currentValue)}}
           containerStyle={{ marginVertical: 20 }}
           placeholder={"Select a date"}
         />
@@ -69,7 +84,7 @@ export default function UCLoggingScreen() {
         <Text text70>{label}</Text>
         <DateTimePicker
           value={value}
-          onChange={(currentValue) => setValue(currentValue)}
+          onChange={(currentValue) => {setValue(currentValue);}}
           mode={"time"}
           containerStyle={{ marginVertical: 20 }}
           placeholder={"Select a Time"}
@@ -81,19 +96,91 @@ export default function UCLoggingScreen() {
   const RadioBtnField = ({ label, value, setValue }: any) => {
     return (
       <>
-        <Text text70 style={{ marginBottom: 13 }}>
+        <Text text70 style={{ marginBottom: 13, marginLeft: 20, textAlign: "left", width: "100%" }}>
           {label}
         </Text>
         <RadioGroup
+          width={"90%"}
           initialValue={value}
-          onValueChange={(currentValue: any) => setValue(currentValue)}
+          onValueChange={(currentValue: any) => { setValue(currentValue);}}
         >
-          <RadioButton style={{ marginBottom: 13 }} value={"0"} label={"0"} />
-          <RadioButton style={{ marginBottom: 13 }} value={"1"} label={"1"} />
-          <RadioButton style={{ marginBottom: 13 }} value={"2"} label={"2"} />
-          <RadioButton style={{ marginBottom: 13 }} value={"3"} label={"3"} />
-          <RadioButton style={{ marginBottom: 13 }} value={"4"} label={"4"} />
-          <RadioButton style={{ marginBottom: 13 }} value={"5"} label={"5"} />
+          <Button
+            outline
+            outlineColor={value == "0" ? "blue" : "lightgray"}
+            borderRadius={0}
+            size={Button.sizes.xSmall}
+            onPress={() => setValue("0")}
+            text60
+            $textDefault
+            style={{ borderWidth: 3, marginBottom: 13, width: "100%", justifyContent: "flex-start" }}
+          >
+            <RadioButton style={{ marginHorizontal: 5, marginVertical: 5 }} value={"0"} label={"0"} />
+          </Button>
+
+          <Button
+            outline
+            outlineColor={value == "1" ? "blue" : "lightgray"}
+            borderRadius={0}
+            size={Button.sizes.xSmall}
+            text60
+            onPress={() => setValue("1")}
+            $textDefault
+            style={{ borderWidth: 3, marginBottom: 13, width: "100%", justifyContent: "flex-start" }}
+          >
+            <RadioButton style={{ marginHorizontal: 5, marginVertical: 5 }} value={"1"} label={"1"} />
+          </Button>
+
+          <Button
+            outline
+            outlineColor={value == "2" ? "blue" : "lightgray"}
+            borderRadius={0}
+            size={Button.sizes.xSmall}
+            onPress={() => setValue("2")}
+            text60
+            $textDefault
+            style={{ borderWidth: 3, marginBottom: 13, width: "100%", justifyContent: "flex-start" }}
+          >
+            <RadioButton style={{ marginHorizontal: 5, marginVertical: 5 }} value={"2"} label={"2"} />
+          </Button>
+
+          <Button
+            outline
+            outlineColor={value == "3" ? "blue" : "lightgray"}
+            borderRadius={0}
+            size={Button.sizes.xSmall}
+            onPress={() => setValue("3")}
+            text60
+            $textDefault
+            style={{ borderWidth: 3, marginBottom: 13, width: "100%", justifyContent: "flex-start" }}
+          >
+            <RadioButton style={{ marginHorizontal: 5, marginVertical: 5 }} value={"3"} label={"3"} />
+          </Button>
+
+          <Button
+            outline
+            outlineColor={value == "4" ? "blue" : "lightgray"}
+            borderRadius={0}
+            size={Button.sizes.xSmall}
+            onPress={() => setValue("4")}
+            text60
+            $textDefault
+            style={{ borderWidth: 3, marginBottom: 13, width: "100%", justifyContent: "flex-start" }}
+          >
+            <RadioButton style={{ marginHorizontal: 5, marginVertical: 5 }} value={"4"} label={"4"} />
+          </Button>
+
+          <Button
+            outline
+            outlineColor={value == "5" ? "blue" : "lightgray"}
+            borderRadius={0}
+            size={Button.sizes.xSmall}
+            onPress={() => setValue("5")}
+            text60
+            $textDefault
+            style={{ borderWidth: 3, marginBottom: 13, width: "100%", justifyContent: "flex-start" }}
+          >
+            <RadioButton style={{ marginHorizontal: 5, marginVertical: 5 }} value={"5"} label={"5"} />
+          </Button>
         </RadioGroup>
       </>
     );
@@ -128,82 +215,48 @@ export default function UCLoggingScreen() {
   const DATA = [
     {
       id: 1,
-      label: FieldLabelType.Date,
-      fieldComponent: (label: string) => (
-        <DateField label={label} value={date} setValue={setDate} />
-      ),
+      label: FieldLabelType.Date
     },
     {
       id: 2,
-      label: FieldLabelType.Time,
-      fieldComponent: (label: string) => (
-        <TimeField label={label} value={time} setValue={setTime} />
-      ),
+      label: FieldLabelType.Time
     },
     {
       id: 3,
-      label: FieldLabelType.Urgency,
-      fieldComponent: (label: string) => (
-        <RadioBtnField label={label} value={urgency} setValue={setUrgency} />
-      ),
+      label: FieldLabelType.Urgency
     },
     {
       id: 4,
-      label: FieldLabelType.Consistency,
-      fieldComponent: (label: string) => (
-        <RadioBtnField
-          label={label}
-          value={consistency}
-          setValue={setConsistency}
-        />
-      ),
+      label: FieldLabelType.Consistency
     },
     {
       id: 5,
-      label: FieldLabelType.Spray,
-      fieldComponent: (label: string) => (
-        <RadioBtnField label={label} value={spray} setValue={setSpray} />
-      ),
+      label: FieldLabelType.Spray
     },
     {
       id: 6,
-      label: FieldLabelType.Volume,
-      fieldComponent: (label: string) => (
-        <RadioBtnField label={label} value={volume} setValue={setVolume} />
-      ),
+      label: FieldLabelType.Volume
     },
     {
       id: 7,
-      label: FieldLabelType.Blood,
-      fieldComponent: (label: string) => (
-        <RadioBtnField label={label} value={blood} setValue={setBlood} />
-      ),
+      label: FieldLabelType.Blood
     },
     {
       id: 8,
-      label: FieldLabelType.Gas,
-      fieldComponent: (label: string) => (
-        <RadioBtnField label={label} value={gas} setValue={setGas} />
-      ),
+      label: FieldLabelType.Gas
     },
     {
       id: 9,
-      label: FieldLabelType.Pain,
-      fieldComponent: (label: string) => (
-        <RadioBtnField label={label} value={pain} setValue={setPain} />
-      ),
+      label: FieldLabelType.Pain
     },
     {
       id: 10,
-      label: FieldLabelType.Nausea,
-      fieldComponent: (label: string) => (
-        <RadioBtnField label={label} value={nausea} setValue={setNausea} />
-      ),
+      label: FieldLabelType.Nausea
     },
     {
       id: 11,
       label: FieldLabelType.Tag,
-      fieldComponent: null
+      fieldComponent: null,
     },
   ];
 
@@ -215,14 +268,14 @@ export default function UCLoggingScreen() {
 
       <View style={{ flex: 1, marginTop: "40%" }}>
         <Carousel
+          ref={carouselRef}
           style={{
             width: "100%",
-            height: 600,
+            height: 700,
             alignItems: "center",
             justifyContent: "center",
           }}
           width={280}
-          height={550}
           pagingEnabled={config.pagingEnabled}
           snapEnabled={config.snapEnabled}
           mode={config.mode}
@@ -236,15 +289,13 @@ export default function UCLoggingScreen() {
           }}
           customConfig={() => ({ type: "positive", viewCount })}
           renderItem={({ item }) => (
-
             <View>
               {item.label != FieldLabelType.Tag ? (
-
                 <Card
                   activeOpacity={1}
                   enableShadow={true}
                   style={{
-                    height: 300,
+                    height: 400,
                     elevation: 10,
                     shadowColor: "#52006A",
                     shadowOpacity: 0.2,
@@ -259,11 +310,19 @@ export default function UCLoggingScreen() {
                   key={item.id}
                   onPress={() => console.log("pressed")}
                 >
-                  {item.fieldComponent(item.label)}
+                  {item.label == FieldLabelType.Date && <DateField label={item.label} value={date} setValue={setDate} />}
+                  {item.label == FieldLabelType.Time && <TimeField label={item.label} value={time} setValue={setTime} />}
+                  {item.label == FieldLabelType.Urgency && <RadioBtnField label={item.label} value={urgency} setValue={setUrgency} />}
+                  {item.label == FieldLabelType.Consistency && <RadioBtnField label={item.label} value={consistency} setValue={setConsistency} />}
+                  {item.label == FieldLabelType.Spray && <RadioBtnField label={item.label} value={spray} setValue={setSpray} />}
+                  {item.label == FieldLabelType.Volume && <RadioBtnField label={item.label} value={volume} setValue={setVolume} />}
+                  {item.label == FieldLabelType.Blood && <RadioBtnField label={item.label} value={blood} setValue={setBlood} />}
+                  {item.label == FieldLabelType.Gas && <RadioBtnField label={item.label} value={gas} setValue={setGas} />}
+                  {item.label == FieldLabelType.Pain && <RadioBtnField label={item.label} value={pain} setValue={setPain} />}
+                  {item.label == FieldLabelType.Nausea && <RadioBtnField label={item.label} value={nausea} setValue={setNausea} />}
+
                 </Card>
-
               ) : (
-
                 <Card
                   activeOpacity={1}
                   enableShadow={true}
@@ -284,10 +343,10 @@ export default function UCLoggingScreen() {
                   onPress={() => console.log("pressed")}
                 >
                   <ScrollView style={{ height: 280 }}>
-                    <View style={{ flexDirection: "row" }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                       <Text
                         text70
-                        style={{ marginBottom: 13, marginRight: 20 }}
+                        style={{ marginBottom: 13, marginRight: 20, marginLeft: 10 }}
                       >
                         {item.label}
                       </Text>
@@ -296,59 +355,74 @@ export default function UCLoggingScreen() {
                         name="edit"
                         size={21}
                         color="black"
-                        style={{ marginTop: 5 }}
+                        style={{ marginTop: 5, marginRight: 10 }}
                       />
                     </View>
 
                     {tags.map((tag: any, index: number) => (
                       <View
-                        style={{ flexDirection: "row" }}
+                        style={{ flexDirection: "row", marginHorizontal: 10 }}
                         id={tag.id}
                         key={tag.id}
                       >
-                        <Checkbox
-                          style={{ marginBottom: 13, marginRight: 10 }}
-                          value={tag.isChecked}
-                          onValueChange={() => setTestValue(tag)}
-                        />
-                        {isTagEditMode && index == tags.length - 1 ? (
-                          <TextInput
-                            style={{ marginRight: 10, marginBottom: 5 }}
-                            placeholder={"Tag Name"}
-                            value={tag.label}
-                            onChangeText={(currentValue) =>
-                              handleTagValueChange(currentValue, tag)
-                            }
+                        <Button
+                          outline
+                          outlineColor={tag.isChecked ? "blue" : "lightgray"}
+                          borderRadius={0}
+                          size={Button.sizes.xSmall}
+                          text60
+                          $textDefault
+                          style={{ borderWidth: 3, marginBottom: 13, width: "100%", justifyContent: "space-between" }}
+                        >
+                          <Checkbox
+                            style={{ marginVertical: 5, marginHorizontal: 5, marginRight: 10 }}
+                            value={tag.isChecked}
+                            onValueChange={() => handleTagChange(tag)}
                           />
-                        ) : (
-                          <Text text80 style={{ marginRight: 10 }}>
-                            {" "}
-                            {tag.label}{" "}
-                          </Text>
-                        )}
+                          { isTagEditMode && index == tags.length - 1 ? (
+                            <TextField
+                              style={{ marginRight: 10, width: 120, height: 20 }}
+                              placeholder={"Tag Name"}
+                              value={tag.label}
+                              fieldStyle={ {
+                                borderWidth: 1,
+                                borderColor: Colors.$outlineDisabledHeavy,
+                                padding: 4,
+                                borderRadius: 2
+                              }}
+                              onChangeText={(currentValue) =>
+                                handleTagValueChange(currentValue, tag)
+                              }
+                            />
+                          ) : (
+                            <Text text80 style={{ marginRight: 10, width: 135}}>
+                              {" "}
+                              {tag.label}{" "}
+                            </Text>
+                          )}
 
-                        {isTagEditMode && index + 1 == tags.length && (
-                          <AntDesign
-                            onPress={() => handleTagAdd()}
-                            name="pluscircleo"
-                            size={24}
-                            color="black"
-                          />
-                        )}
-                        {isTagEditMode && index < tags.length - 1 && (
-                          <AntDesign
-                            onPress={() => handleTagRemove(tag.id)}
-                            name="minuscircleo"
-                            size={21}
-                            color="black"
-                          />
-                        )}
+                          {isTagEditMode && index + 1 == tags.length && (
+                            <AntDesign
+                              onPress={() => handleTagAdd()}
+                              name="pluscircleo"
+                              size={24}
+                              color="black"
+                            />
+                          )}
+                          {isTagEditMode && index < tags.length - 1 && (
+                            <AntDesign
+                              onPress={() => handleTagRemove(tag.id)}
+                              name="minuscircleo"
+                              size={21}
+                              color="black"
+                            />
+                          )}
+                        </Button>
                       </View>
                     ))}
                   </ScrollView>
                 </Card>
               )}
-
             </View>
           )}
         />
