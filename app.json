@@ -21,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/daily-health-app-2.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.saifeliyas.Healthyfy"
     },
     "web": {
       "favicon": "./assets/daily-health-app.png"

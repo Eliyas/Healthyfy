@@ -58,7 +58,7 @@ export default function UCLoggingScreen() {
         if(carouselRef.current) carouselRef.current.next();
       }, 2000);
     }
-  }, [date, time, urgency, consistency, spray, volume, blood, gas, pain, nausea ]);
+  }, [date, time, urgency, consistency, spray, volume, blood, gas, pain, nausea]);
 
   const nextCard = () => {
     
