@@ -21,9 +21,11 @@ export default function HomeScreen() {
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
 
   return (
-    <Container>
+    <Container style={{backgroundColor: "#E6DBD9"}}>
       <HeaderViewContainer>
-        <Text text50>Welcome To Hethyfi</Text>
+        <Text text50 style={{ textAlign: "center", width: "100%", fontSize: 20, fontFamily: "Inter-Thin" }}>
+          My UC Healing Journey
+        </Text>
       </HeaderViewContainer>
 
       <FlatListContainer>
@@ -31,15 +33,18 @@ export default function HomeScreen() {
           data={DATA}
           scrollEnabled={false}
           renderItem={({ item }) => (
-            <View row marginV-10 width={"90%"}>
+            <View row marginV-10 width={"100%"}>
               <Card
                 activeOpacity={1}
                 enableShadow={true}
                 style={{
                   elevation: 10,
                   shadowColor: "#52006A",
+                  backgroundColor: "#F6F1F1",
+                  borderRadius: 0,
                   shadowOpacity: 0.2,
                   shadowRadius: 3,
+                  paddingHorizontal: 10,
                   width: "100%",
                 }}
                 enableBlur={false}

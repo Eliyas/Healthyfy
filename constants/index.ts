@@ -2,9 +2,9 @@
 
 
 export const FieldLabelType = {
-    Date: "Date",
+    DateTime: "Date & Time",
     Time: "Time",
-    Urgency: "Urgency",
+    Urgency: "Gauging Urgency",
     Consistency: "Consistency",
     Spray: "Spray",
     Volume: "Volume",
@@ -12,5 +12,6 @@ export const FieldLabelType = {
     Gas: "Gas",
     Pain: "Pain",
     Nausea: "Nausea",
-    Tag: "Tag"
+    Tag: "Tags",
+    Submit: "Submit",
 }
