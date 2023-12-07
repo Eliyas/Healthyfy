@@ -2,7 +2,7 @@
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
-enum PostStatus {
+enum ReportType {
   POO
 }
 
@@ -10,10 +10,20 @@ type Report @model {
   id: ID!
   dateTime: AWSDateTime!
   data: AWSJSON!
-  type: PostStatus
+  type: ReportType
+  reportTags: [ReportTags] @hasMany(indexName: "byReport", fields: ["id"])
 }
 
-type Tag @model {
+type Tag @model @searchable {
   id: ID!
   name: String!
+}
+
+type ReportTags @model {
+  id: ID!
+  reportID: ID! @index(name: "byReport")
+  tagID: ID!
+  report: Report @belongsTo(fields: ["reportID"])
+  tag: Tag @hasOne(fields: ["tagID"])
+
 }

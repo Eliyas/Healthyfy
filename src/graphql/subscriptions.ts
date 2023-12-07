@@ -14,6 +14,10 @@ export const onCreateReport = /* GraphQL */ `subscription OnCreateReport($filter
     dateTime
     data
     type
+    reportTags {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -29,6 +33,10 @@ export const onUpdateReport = /* GraphQL */ `subscription OnUpdateReport($filter
     dateTime
     data
     type
+    reportTags {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -44,6 +52,10 @@ export const onDeleteReport = /* GraphQL */ `subscription OnDeleteReport($filter
     dateTime
     data
     type
+    reportTags {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -91,4 +103,100 @@ export const onDeleteTag = /* GraphQL */ `subscription OnDeleteTag($filter: Mode
 ` as GeneratedSubscription<
   APITypes.OnDeleteTagSubscriptionVariables,
   APITypes.OnDeleteTagSubscription
+>;
+export const onCreateReportTags = /* GraphQL */ `subscription OnCreateReportTags(
+  $filter: ModelSubscriptionReportTagsFilterInput
+) {
+  onCreateReportTags(filter: $filter) {
+    id
+    reportID
+    tagID
+    report {
+      id
+      dateTime
+      data
+      type
+      createdAt
+      updatedAt
+      __typename
+    }
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateReportTagsSubscriptionVariables,
+  APITypes.OnCreateReportTagsSubscription
+>;
+export const onUpdateReportTags = /* GraphQL */ `subscription OnUpdateReportTags(
+  $filter: ModelSubscriptionReportTagsFilterInput
+) {
+  onUpdateReportTags(filter: $filter) {
+    id
+    reportID
+    tagID
+    report {
+      id
+      dateTime
+      data
+      type
+      createdAt
+      updatedAt
+      __typename
+    }
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateReportTagsSubscriptionVariables,
+  APITypes.OnUpdateReportTagsSubscription
+>;
+export const onDeleteReportTags = /* GraphQL */ `subscription OnDeleteReportTags(
+  $filter: ModelSubscriptionReportTagsFilterInput
+) {
+  onDeleteReportTags(filter: $filter) {
+    id
+    reportID
+    tagID
+    report {
+      id
+      dateTime
+      data
+      type
+      createdAt
+      updatedAt
+      __typename
+    }
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteReportTagsSubscriptionVariables,
+  APITypes.OnDeleteReportTagsSubscription
 >;
