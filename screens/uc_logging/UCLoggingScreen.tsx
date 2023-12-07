@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import Carousel from "react-native-reanimated-carousel";
-import { Dimensions } from "react-native";
+import { ActivityIndicator, Dimensions } from "react-native";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import _ from "lodash";
 import {
@@ -15,9 +15,9 @@ import {
   TextField,
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
-import { CreateReportInput, ReportType, SearchTagsQueryVariables, SearchableSortDirection, SearchableTagSortableFields } from "../../src/API";
+import { CreateReportInput, CreateReportMutation, CreateReportTagsMutation, CreateTagMutation, CreateTagMutationVariables, DeleteTagMutation, ReportType, SearchTagsQueryVariables, SearchableSortDirection, SearchableTagSortableFields } from "../../src/API";
 import { GraphQLQuery } from '@aws-amplify/api';
-import { API, graphqlOperation, } from 'aws-amplify';
+import { API, graphqlOperation } from 'aws-amplify';
 import * as mutations from '../../src/graphql/mutations';
 import { CreateTagInput, DeleteTagInput } from "../../src/API";
 import moment from "moment";
@@ -155,7 +155,8 @@ export default function UCLoggingScreen() {
     try {
 
       const response: any = await API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
-        graphqlOperation(query.searchTags, {
+        {
+          query: query.searchTags,
           variables: {
             filter: { name: { wildcard: "*" } },
             sort: [{
@@ -164,7 +165,6 @@ export default function UCLoggingScreen() {
             }]
           }
         })
-      );
       console.log("Success")
       console.log("tags", response.data.searchTags.items)
       setTags(response.data.searchTags.items);
@@ -194,15 +194,17 @@ export default function UCLoggingScreen() {
   const saveCurrentTag = async () => {
     if (!currentTagEdit.name) return;
     const input: CreateTagInput = { name: currentTagEdit.name };
+    console.log("input ", input)
     setIsLoading(true);
     try {
-      const newTag: any = await API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
-        graphqlOperation(mutation.createTag, {
+      const newTag: any = await API.graphql<GraphQLQuery<CreateTagInput>>(
+        {
+          query: mutation.createTag,
           variables: { input }
-        })
-      );
+        });
       console.log("Success")
-      console.log("newTodo", newTag)
+      console.log("newTodo", newTag);
+      setCurrentTagEdit(null);
       fetchTags();
       setIsLoading(false);
     } catch (err) {
@@ -212,17 +214,33 @@ export default function UCLoggingScreen() {
     }
   };
 
+  if (global.__fbBatchedBridge) {
+    const origMessageQueue = global.__fbBatchedBridge;
+    const modules = origMessageQueue._remoteModuleTable;
+    const methods = origMessageQueue._remoteMethodTable;
+    global.findModuleByModuleAndMethodIds = (moduleId) => {
+      console.log(`The problematic line code is in: ${modules[moduleId]}.${methods[moduleId]}`)
+    }
+  }
+
+  global.findModuleByModuleAndMethodIds(63);
+  global.findModuleByModuleAndMethodIds(685);
+
+
   const deleteTag = async (tagId) => {
     const input: DeleteTagInput = { id: tagId };
+    console.log(" delete ", input);
     try {
-      const removedTag: any = await API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
-        graphqlOperation(mutation.deleteTag, {
+      const removedTag: any = await API.graphql<GraphQLQuery<DeleteTagInput>>(
+        {
+          query: mutation.deleteTag,
           variables: { input }
-        })
-      );
+        });
       console.log("Success")
       console.log("removedTag", removedTag)
-      fetchTags();
+      setCurrentTagEdit(null);
+      _.remove(tags, { id: tagId });
+      setTags(tags);
     } catch (err) {
       console.error("Failed to remove tag");
       console.error(err);
@@ -280,11 +298,10 @@ export default function UCLoggingScreen() {
     });
 
     try {
-      const reportResponse: any = await API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
-        graphqlOperation(mutations.createReport, {
-          variables: { input }
-        })
-      );
+      const reportResponse: any = await API.graphql<GraphQLQuery<CreateReportMutation>>(
+        {
+          query: mutations.createReport, variables: { input }
+        });
 
       _.each(reportTagsInput, tag => {
         tag.reportID = reportResponse.data.createReport.id;
@@ -292,11 +309,11 @@ export default function UCLoggingScreen() {
 
       console.log(" reportTagsInput ", reportTagsInput)
       const promises = _.map(reportTagsInput, input => {
-        return API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
-          graphqlOperation(mutations.createReportTags, {
+        return API.graphql<GraphQLQuery<CreateReportTagsMutation>>(
+          {
+            query: mutations.createReportTags,
             variables: { input }
           })
-        );
       });
       await Promise.all(promises);
       console.log(" Success")
@@ -600,7 +617,7 @@ export default function UCLoggingScreen() {
                           <Text onPress={() => { if (!isLoading) handleTagAdd() }} text80 style={{ marginLeft: 10, marginRight: 10, fontWeight: "400", fontSize: 20 }}>
                             Add a tag
                           </Text>
-                          {/* {isLoading && <ActivityIndicator color={'black'} />} */}
+                          {isLoading && <ActivityIndicator color={'black'} />}
                         </View>
 
                       </ScrollView>
