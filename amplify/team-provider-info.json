@@ -1,19 +1,19 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-healthyfy-dev-65904-authRole",
-      "UnauthRoleArn": "arn:aws:iam::447522167075:role/amplify-healthyfy-dev-65904-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::447522167075:role/amplify-healthyfy-dev-65904-authRole",
+      "AuthRoleName": "amplify-uchealth-dev-185259-authRole",
+      "UnauthRoleArn": "arn:aws:iam::447522167075:role/amplify-uchealth-dev-185259-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::447522167075:role/amplify-uchealth-dev-185259-authRole",
       "Region": "ap-south-1",
-      "DeploymentBucketName": "amplify-healthyfy-dev-65904-deployment",
-      "UnauthRoleName": "amplify-healthyfy-dev-65904-unauthRole",
-      "StackName": "amplify-healthyfy-dev-65904",
-      "StackId": "arn:aws:cloudformation:ap-south-1:447522167075:stack/amplify-healthyfy-dev-65904/d8a37720-93d6-11ee-bd85-0afc895c52b0",
-      "AmplifyAppId": "ddkfuko2ou7sd"
+      "DeploymentBucketName": "amplify-uchealth-dev-185259-deployment",
+      "UnauthRoleName": "amplify-uchealth-dev-185259-unauthRole",
+      "StackName": "amplify-uchealth-dev-185259",
+      "StackId": "arn:aws:cloudformation:ap-south-1:447522167075:stack/amplify-uchealth-dev-185259/be891740-9503-11ee-8e5e-0209b5cf7d74",
+      "AmplifyAppId": "d3331lejruzr9m"
     },
     "categories": {
       "api": {
-        "healthyfy": {}
+        "uchealth": {}
       }
     }
   }

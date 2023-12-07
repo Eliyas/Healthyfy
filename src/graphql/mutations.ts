@@ -17,6 +17,10 @@ export const createReport = /* GraphQL */ `mutation CreateReport(
     dateTime
     data
     type
+    reportTags {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -35,6 +39,10 @@ export const updateReport = /* GraphQL */ `mutation UpdateReport(
     dateTime
     data
     type
+    reportTags {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -53,6 +61,10 @@ export const deleteReport = /* GraphQL */ `mutation DeleteReport(
     dateTime
     data
     type
+    reportTags {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -109,4 +121,103 @@ export const deleteTag = /* GraphQL */ `mutation DeleteTag(
 ` as GeneratedMutation<
   APITypes.DeleteTagMutationVariables,
   APITypes.DeleteTagMutation
+>;
+export const createReportTags = /* GraphQL */ `mutation CreateReportTags(
+  $input: CreateReportTagsInput!
+  $condition: ModelReportTagsConditionInput
+) {
+  createReportTags(input: $input, condition: $condition) {
+    id
+    reportID
+    tagID
+    report {
+      id
+      dateTime
+      data
+      type
+      createdAt
+      updatedAt
+      __typename
+    }
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateReportTagsMutationVariables,
+  APITypes.CreateReportTagsMutation
+>;
+export const updateReportTags = /* GraphQL */ `mutation UpdateReportTags(
+  $input: UpdateReportTagsInput!
+  $condition: ModelReportTagsConditionInput
+) {
+  updateReportTags(input: $input, condition: $condition) {
+    id
+    reportID
+    tagID
+    report {
+      id
+      dateTime
+      data
+      type
+      createdAt
+      updatedAt
+      __typename
+    }
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateReportTagsMutationVariables,
+  APITypes.UpdateReportTagsMutation
+>;
+export const deleteReportTags = /* GraphQL */ `mutation DeleteReportTags(
+  $input: DeleteReportTagsInput!
+  $condition: ModelReportTagsConditionInput
+) {
+  deleteReportTags(input: $input, condition: $condition) {
+    id
+    reportID
+    tagID
+    report {
+      id
+      dateTime
+      data
+      type
+      createdAt
+      updatedAt
+      __typename
+    }
+    tag {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteReportTagsMutationVariables,
+  APITypes.DeleteReportTagsMutation
 >;

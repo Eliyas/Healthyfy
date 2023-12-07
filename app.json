@@ -4,12 +4,12 @@
     "slug": "Healthyfy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/daily-health-app.png",
+    "icon": "./assets/daily-health-app-4.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/daily-health-app-3.png",
+      "image": "./assets/spash-logo.png",
       "resizeMode": "native",
-      "backgroundColor": "#ff0080"
+      "backgroundColor": "#E6DBD9"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,13 +19,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/daily-health-app-2.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/daily-health-app-4.png",
+        "backgroundColor": "#E6DBD9"
       },
       "package": "com.saifeliyas.Healthyfy"
     },
     "web": {
-      "favicon": "./assets/daily-health-app.png"
+      "favicon": "./assets/daily-health-app-4.png"
     }
   }
 }

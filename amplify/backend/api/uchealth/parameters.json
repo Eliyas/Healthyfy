@@ -1,5 +1,5 @@
 {
-  "AppSyncApiName": "healthyfy",
+  "AppSyncApiName": "uchealth",
   "DynamoDBBillingMode": "PAY_PER_REQUEST",
   "DynamoDBEnableServerSideEncryption": false
 }

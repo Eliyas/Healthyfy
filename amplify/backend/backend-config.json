@@ -1,6 +1,6 @@
 {
   "api": {
-    "healthyfy": {
+    "uchealth": {
       "dependsOn": [],
       "output": {
         "authConfig": {
