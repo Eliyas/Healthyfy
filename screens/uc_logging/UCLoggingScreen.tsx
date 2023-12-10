@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import Carousel from "react-native-reanimated-carousel";
-import { ActivityIndicator, Dimensions } from "react-native";
+import { ActivityIndicator, Dimensions, Keyboard, KeyboardAvoidingView, Platform, StatusBar, TouchableWithoutFeedback } from "react-native";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import _ from "lodash";
 import {
@@ -28,7 +28,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { generateUUID } from "../../utils";
 import DateField from "../../components/DateTimeUCComponent";
 import SingleChoiceUCComponent from "../../components/SingleChoiceUCComponent";
-
+import Fuse from 'fuse.js'
 
 const config: any = {
   mode: "horizontal-stack",
@@ -88,15 +88,15 @@ const DATA = [
   },
   {
     id: 10,
-    label: FieldLabelType.Tag,
+label: FieldLabelType.Tag,
     page: 9
   },
   {
     id: 11,
     label: FieldLabelType.Submit,
-  },
+    },
 ];
-
+let fuse: Fuse<any[]>;
 export default function UCLoggingScreen() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -108,6 +108,7 @@ export default function UCLoggingScreen() {
   const [gas, setGas] = useState("");
   const [pain, setPain] = useState("");
   const [nausea, setNausea] = useState("");
+  const [tagSearchText, setTagSearchText] = useState("");
   const [isAutoFullSlideOver, setIsAutoFullSlideOver] = useState(false);
 
   const [currentTagEdit, setCurrentTagEdit] = useState({ id: "", name: "" });
@@ -123,10 +124,18 @@ export default function UCLoggingScreen() {
   const carouselRef: any = useRef();
   const width = Dimensions.get('window').width;
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+  const viewCount = 5;
 
-  useEffect(() => {
-    fetchTags();
-  }, []);
+  const fieldLabelSetStateMap = {
+    [FieldLabelType.Blood]: setBlood,
+    [FieldLabelType.Urgency]: setUrgency,
+    [FieldLabelType.Consistency]: setConsistency,
+    [FieldLabelType.Gas]: setGas,
+    [FieldLabelType.Pain]: setPain,
+    [FieldLabelType.Spray]: setSpray,
+    [FieldLabelType.Volume]: setVolume,
+    [FieldLabelType.Nausea]: setNausea,
+  }
 
   useEffect(() => {
     console.log("timout calling")
@@ -135,8 +144,12 @@ export default function UCLoggingScreen() {
     }, 3000);
   }, [toastInfo.isShowToast]);
 
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
   const nextSlide = () => {
-    if (!isAutoFullSlideOver && carouselRef.current && (carouselRef.current.getCurrentIndex() + 1) <= 10) {
+    if (!isAutoFullSlideOver && carouselRef.current && (carouselRef.current.getCurrentIndex() + 1) < 10) {
       console.log("carouselRef.current inner " + carouselRef.current.getCurrentIndex());
       console.log("changing");
       carouselRef.current.next(1);
@@ -153,7 +166,6 @@ export default function UCLoggingScreen() {
 
   const fetchTags = async () => {
     try {
-
       const response: any = await API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
         {
           query: query.searchTags,
@@ -168,6 +180,7 @@ export default function UCLoggingScreen() {
       console.log("Success")
       console.log("tags", response.data.searchTags.items)
       setTags(response.data.searchTags.items);
+      fuse = new Fuse(response.data.searchTags.items, { includeScore: true, keys: ['name'] });
     } catch (err) {
       console.error("Failed to fetch tags");
       console.error(err);
@@ -180,7 +193,7 @@ export default function UCLoggingScreen() {
   };
 
   const handleTagAdd = () => {
-    const newTag = { id: generateUUID(), name: "" };
+    const newTag = { id: generateUUID(), name: "", isChecked: false };
     setTags([...tags, newTag]);
     setIsTagEditMode(true);
   }
@@ -214,19 +227,6 @@ export default function UCLoggingScreen() {
     }
   };
 
-  if (global.__fbBatchedBridge) {
-    const origMessageQueue = global.__fbBatchedBridge;
-    const modules = origMessageQueue._remoteModuleTable;
-    const methods = origMessageQueue._remoteMethodTable;
-    global.findModuleByModuleAndMethodIds = (moduleId) => {
-      console.log(`The problematic line code is in: ${modules[moduleId]}.${methods[moduleId]}`)
-    }
-  }
-
-  global.findModuleByModuleAndMethodIds(63);
-  global.findModuleByModuleAndMethodIds(685);
-
-
   const deleteTag = async (tagId) => {
     const input: DeleteTagInput = { id: tagId };
     console.log(" delete ", input);
@@ -239,8 +239,11 @@ export default function UCLoggingScreen() {
       console.log("Success")
       console.log("removedTag", removedTag)
       setCurrentTagEdit(null);
-      _.remove(tags, { id: tagId });
-      setTags(tags);
+      const newTags = [];
+      _.each(tags, tag => {
+        if (tag.id != tagId) newTags.push(tag);
+      });
+      setTags(newTags);
     } catch (err) {
       console.error("Failed to remove tag");
       console.error(err);
@@ -249,9 +252,6 @@ export default function UCLoggingScreen() {
 
   const handleDateSelect = (value) => {
     setDate(value);
-    if (time) {
-      nextSlide();
-    }
   };
 
   const handleTimeSelect = (value) => {
@@ -261,7 +261,18 @@ export default function UCLoggingScreen() {
     }
   };
 
-  const viewCount = 5;
+  const handleSearch = (value) => {
+    const result = fuse.search(value);
+    setTagSearchText(value);
+    setTags(_.map(result, tag => tag.item));
+  };
+
+  const handleValueSelect = (label, value) => {
+    if (fieldLabelSetStateMap[label]) {
+      fieldLabelSetStateMap[label](value);
+      nextSlide();
+    }
+  }
 
   const handleOnSubmit = async () => {
     console.log("Date ", date);
@@ -365,7 +376,6 @@ export default function UCLoggingScreen() {
       paddingH-10
       paddingV-20
       key={item.id}
-      onPress={() => console.log("pressed")}
     >
       <View width={"100%"}>
         <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 30, textAlign: "center", paddingVertical: 40, }}>Submit the report?</Text>
@@ -404,8 +414,8 @@ export default function UCLoggingScreen() {
     </Card>
   )
 
-
   return (
+
     <View style={{ flex: 1, backgroundColor: "#E6DBD9" }}>
       <Container style={{ backgroundColor: "#E6DBD9" }}>
         <HeaderViewContainer>
@@ -414,8 +424,8 @@ export default function UCLoggingScreen() {
 
         <View style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, marginTop: "15%", flexDirection: "row" }}>
           <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>Nature's Call Report</Text>
-          {currentPage <= 10 && <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>
-            {currentPage}/10
+          {!!currentPage && currentPage <= 10 && <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>
+            {!!currentPage ? currentPage : 1}/10
           </Text>}
         </View>
         <View style={{ display: "flex", }}>
@@ -471,14 +481,14 @@ export default function UCLoggingScreen() {
                     >
                       {item.label == FieldLabelType.DateTime && <DateField label={item.label} dateValue={date} timeValue={time} setDateValue={handleDateSelect}
                         setTimeValue={handleTimeSelect} />}
-                      {item.label == FieldLabelType.Urgency && <SingleChoiceUCComponent label={item.label} value={urgency} setValue={setUrgency} page={item.page} nextSlide={nextSlide} />}
-                      {item.label == FieldLabelType.Consistency && <SingleChoiceUCComponent label={item.label} value={consistency} setValue={setConsistency} page={item.page} nextSlide={nextSlide} />}
-                      {item.label == FieldLabelType.Spray && <SingleChoiceUCComponent label={item.label} value={spray} setValue={setSpray} page={item.page} nextSlide={nextSlide} />}
-                      {item.label == FieldLabelType.Volume && <SingleChoiceUCComponent label={item.label} value={volume} setValue={setVolume} page={item.page} nextSlide={nextSlide} />}
-                      {item.label == FieldLabelType.Blood && <SingleChoiceUCComponent label={item.label} value={blood} setValue={setBlood} page={item.page} nextSlide={nextSlide} />}
-                      {item.label == FieldLabelType.Gas && <SingleChoiceUCComponent label={item.label} value={gas} setValue={setGas} page={item.page} nextSlide={nextSlide} />}
-                      {item.label == FieldLabelType.Pain && <SingleChoiceUCComponent label={item.label} value={pain} setValue={setPain} page={item.page} nextSlide={nextSlide} />}
-                      {item.label == FieldLabelType.Nausea && <SingleChoiceUCComponent label={item.label} value={nausea} setValue={setNausea} page={item.page} nextSlide={nextSlide} />}
+                      {item.label == FieldLabelType.Urgency && <SingleChoiceUCComponent label={item.label} value={urgency} handleValueSelect={handleValueSelect} />}
+                      {item.label == FieldLabelType.Consistency && <SingleChoiceUCComponent label={item.label} value={consistency} handleValueSelect={handleValueSelect} />}
+                      {item.label == FieldLabelType.Spray && <SingleChoiceUCComponent label={item.label} value={spray} handleValueSelect={handleValueSelect} />}
+                      {item.label == FieldLabelType.Volume && <SingleChoiceUCComponent label={item.label} value={volume} handleValueSelect={handleValueSelect} />}
+                      {item.label == FieldLabelType.Blood && <SingleChoiceUCComponent label={item.label} value={blood} handleValueSelect={handleValueSelect} />}
+                      {item.label == FieldLabelType.Gas && <SingleChoiceUCComponent label={item.label} value={gas} handleValueSelect={handleValueSelect} />}
+                      {item.label == FieldLabelType.Pain && <SingleChoiceUCComponent label={item.label} value={pain} handleValueSelect={handleValueSelect} />}
+                      {item.label == FieldLabelType.Nausea && <SingleChoiceUCComponent label={item.label} value={nausea} handleValueSelect={handleValueSelect} />}
 
                     </Card>
 
@@ -503,124 +513,139 @@ export default function UCLoggingScreen() {
                       paddingH-10
                       paddingV-20
                       key={item.id}
-                      onPress={() => console.log("pressed")}
                     >
-                      <ScrollView style={{ height: 280 }}>
-                        <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                          <Text
-                            text70
-                            style={{
-                              color: "#312E2B", fontWeight: "700", fontSize: 20, marginBottom: 13,
-                              textAlign: "center"
-                            }}
-                          >
-                            {item.label}
-                          </Text>
-                          <FontAwesome
-                            onPress={() => setIsTagEditMode(!isTagEditMode)}
-                            name="edit"
-                            size={21}
-                            color="black"
-                            style={{ marginTop: 5, marginLeft: 10 }}
-                          />
-                        </View>
 
-                        {tags.map((tag: any, index: number) => (
-                          <View
-                            style={{ flexDirection: "row", marginHorizontal: 10 }}
-                            id={tag.id}
-                            key={tag.id}
-                          >
-                            <Button
-                              outline
-                              borderRadius={0}
-                              size={Button.sizes.xSmall}
-                              text60
-                              $textDefault
-                              onPress={() => {
-                                if (!tag.isEditMode) handleTagChange(tag)
-                              }}
-                              labelStyle={{ fontWeight: "400", fontSize: 20, textAlign: "center", color: tag.isChecked ? "#FFFFFF" : "#312E2B" }}
-                              style={{
-                                height: 50, backgroundColor: tag.isChecked ? "#5C5A57" : "#FFFFFF", borderColor: "#5C5A57", borderWidth: 1, marginBottom: 13,
-                                width: "100%", justifyContent: "center"
-                              }}
+                      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                        <Text
+                          text70
+                          style={{
+                            color: "#312E2B", fontWeight: "700", fontSize: 20, textAlign: "center"
+                          }}
+                        >
+                          {item.label}
+                        </Text>
+                        <FontAwesome
+                          onPress={() => setIsTagEditMode(!isTagEditMode)}
+                          name="edit"
+                          size={21}
+                          color="black"
+                          style={{ marginTop: 3, marginLeft: 15 }}
+                        />
+                      </View>
+
+                      <View style={{ paddingHorizontal: 10, marginTop: 10, marginBottom: 20, width: "100%" }}>
+                        <TextField
+                          placeholder={'Filter for a tag...'}
+                          onChangeText={(value) => handleSearch(value)}
+                          style={{ fontWeight: "400", fontSize: 20, marginRight: 10 }}
+                          fieldStyle={{
+                            borderBottomWidth: 1,
+                            borderColor: Colors.$outlineDisabledHeavy,
+                            paddingBottom: 4
+                          }}
+                        />
+                      </View>
+                      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                        <ScrollView style={{ height: 280 }} keyboardShouldPersistTaps="always">
+                          {tags.map((tag: any, index: number) => (
+                            <View
+                              style={{ flexDirection: "row", marginHorizontal: 10 }}
+                              id={tag.id}
+                              key={tag.id}
                             >
-                              <Checkbox
-                                style={{ marginVertical: 5, marginHorizontal: 5, marginRight: 10, display: "none" }}
-                                value={tag.isChecked}
-                                onValueChange={() => handleTagChange(tag)}
-                              />
+                              <Button
+                                outline
+                                borderRadius={0}
+                                size={Button.sizes.xSmall}
+                                text60
+                                $textDefault
+                                onPress={() => {
+                                  if (!tag.isEditMode) handleTagChange(tag)
+                                }}
+                                labelStyle={{ fontWeight: "400", fontSize: 20, textAlign: "center", color: "#FFFFFF" }}
+                                style={{
+                                  height: 50, backgroundColor: "#FFFFFF", borderColor: "#5C5A57", borderWidth: 1, marginBottom: 13,
+                                  width: "100%"
+                                }}
+                              >
+                                <Checkbox
+                                  value={!!tag.isChecked}
+                                  borderRadius={100}
+                                  color="#5C5A57"
+                                  onValueChange={() => handleTagChange(tag)}
+                                />
 
-                              {
-                                !isTagEditMode && <Text text80 style={{
-                                  fontWeight: "400", fontSize: 20, width: "90%", textAlign: "center",
-                                  color: tag.isChecked ? "#FFFFFF" : "#312E2B"
-                                }}>
-                                  {tag.name}
-                                </Text>
-                              }
-
-                              {
-                                isTagEditMode && index != tags.length - 1 && <View style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-                                  <Text text80 style={{
-                                    fontWeight: "400", fontSize: 20, width: "90%", textAlign: "center",
-                                    color: tag.isChecked ? "#FFFFFF" : "#312E2B"
+                                {
+                                  !isTagEditMode && <Text text80 style={{
+                                    fontWeight: "400", fontSize: 20, width: 200, textAlign: "center",
+                                    color: "#312E2B"
                                   }}>
-                                    {tag.name}
+                                    {tag.name ? tag.name : ""}
                                   </Text>
-                                  <AntDesign
-                                    onPress={() => deleteTag(tag.id)}
-                                    name="minuscircleo"
-                                    size={21}
-                                    style={{ marginLeft: 10 }}
-                                    color="black"
-                                  />
-                                </View>
-                              }
+                                }
 
-                              {
-                                isTagEditMode && index == tags.length - 1 && <View style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-                                  <TextField
-                                    style={{ fontWeight: "400", fontSize: 20, marginRight: 10, width: 200, height: 20 }}
-                                    placeholder={"Tag Name"}
-                                    value={tag.name}
-                                    fieldStyle={{
-                                      padding: 4,
-                                      borderBottomWidth: 1,
-                                      borderColor: Colors.$outlineDisabledHeavy,
-                                    }}
-                                    onChangeText={(currentValue) => handleTagValueChange(currentValue, tag)}
-                                    onBlur={() => saveCurrentTag()}
-                                  />
-                                  <AntDesign
-                                    onPress={() => deleteTag(tag.id)}
-                                    name="minuscircleo"
-                                    size={21}
-                                    style={{ marginLeft: 10 }}
-                                    color="black"
-                                  />
-                                </View>
-                              }
+                                {
+                                  isTagEditMode && index != tags.length - 1 && <View style={{ display: "flex", flexDirection: "row" }}>
+                                    <Text text80 style={{
+                                      fontWeight: "400", fontSize: 20, width: 170, textAlign: "center",
+                                      color: "#312E2B"
+                                    }}>
+                                      {tag.name ? tag.name : ""}
+                                    </Text>
+                                    <AntDesign
+                                      onPress={() => deleteTag(tag.id)}
+                                      name="minuscircleo"
+                                      size={21}
+                                      style={{ marginLeft: 10 }}
+                                      color="black"
+                                    />
+                                  </View>
+                                }
 
-                            </Button>
+                                {
+                                  isTagEditMode && index == tags.length - 1 && <View style={{ display: "flex", flexDirection: "row", width: 200 }}>
+                                    <TextField
+                                      style={{ fontWeight: "400", fontSize: 20, width: 150, height: 20 }}
+                                      placeholder={"Tag Name"}
+                                      value={tag.name ? tag.name : ""}
+                                      fieldStyle={{
+                                        marginHorizontal: 10,
+                                        padding: 4,
+                                        borderBottomWidth: 1,
+                                        borderColor: Colors.$outlineDisabledHeavy,
+                                      }}
+                                      onChangeText={(currentValue) => handleTagValueChange(currentValue, tag)}
+                                      onBlur={() => saveCurrentTag()}
+                                    />
+                                    <AntDesign
+                                      onPress={() => deleteTag(tag.id)}
+                                      name="minuscircleo"
+                                      size={21}
+
+                                      color="black"
+                                    />
+                                  </View>
+                                }
+
+                              </Button>
+                            </View>
+                          ))}
+
+                          <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", marginTop: 10 }} >
+                            <AntDesign
+                              onPress={() => handleTagAdd()}
+                              name="plus"
+                              size={18}
+                              color="black"
+                            />
+                            <Text onPress={() => { if (!isLoading) handleTagAdd() }} text80 style={{ marginLeft: 10, marginRight: 10, fontWeight: "400", fontSize: 20 }}>
+                              Add a tag
+                            </Text>
+                            {isLoading && <ActivityIndicator color={'black'} />}
                           </View>
-                        ))}
 
-                        <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }} >
-                          <AntDesign
-                            onPress={() => handleTagAdd()}
-                            name="plus"
-                            size={18}
-                            color="black"
-                          />
-                          <Text onPress={() => { if (!isLoading) handleTagAdd() }} text80 style={{ marginLeft: 10, marginRight: 10, fontWeight: "400", fontSize: 20 }}>
-                            Add a tag
-                          </Text>
-                          {isLoading && <ActivityIndicator color={'black'} />}
-                        </View>
-
-                      </ScrollView>
+                        </ScrollView>
+                      </TouchableWithoutFeedback>
                     </Card>
                 }
               </View>

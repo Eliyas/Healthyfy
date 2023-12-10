@@ -10,9 +10,9 @@ Amplify.configure(amplifyconfig);
 export default function App() {
   return (
     <Container>
-    <StatusBar style="auto" />
-    <RootNavigation />
-  </Container>
+      <StatusBar style="auto" />
+      <RootNavigation />
+    </Container>
   );
 }
 

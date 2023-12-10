@@ -9,7 +9,7 @@ const radioOptions = [
     { id: "6", label: "Emergency!" },
 ]
 
-const SingleChoiceUCComponent = ({ label, value, setValue, page, nextSlide }: any) => {
+const SingleChoiceUCComponent = ({ label, value, handleValueSelect }: any) => {
     return (
         <View style={{ alignItems: "center", display: "flex", width: "100%" }}>
             <Text text70 style={{
@@ -26,8 +26,8 @@ const SingleChoiceUCComponent = ({ label, value, setValue, page, nextSlide }: an
                         outline
                         borderRadius={0}
                         size={Button.sizes.xSmall}
-                        onPress={() => { setValue(option.label); nextSlide(); }}
-                        labelStyle={{ fontWeight: "400", fontSize: 20, textAlign: "center", color: value == option.label ? "#FFFFFF" : "#312E2B" }}
+                        onPress={() => { handleValueSelect(label, option.label); }}
+                        labelStyle={{ fontWeight: "400", fontSize: 20, textAlign: "center", color: value == option.label ? "#FFFFFF" : "#312E2B"}}
                         label={option.label}
                         $textDefault
                         style={{
