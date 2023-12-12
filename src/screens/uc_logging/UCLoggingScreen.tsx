@@ -15,8 +15,10 @@ import {
   TextField,
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
-import { CreateReportInput, CreateReportMutation, CreateReportTagsMutation, 
-   ReportType, SearchTagsQueryVariables, SearchableSortDirection, SearchableTagSortableFields } from "../../API";
+import {
+  CreateReportInput, CreateReportMutation, CreateReportTagsMutation,
+  ReportType, SearchTagsQueryVariables, SearchableSortDirection, SearchableTagSortableFields
+} from "../../API";
 import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
@@ -26,7 +28,7 @@ import * as mutation from "../../graphql/mutations";
 import * as query from "../../graphql/queries";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
-import { generateUUID } from "../../utils"; 
+import { generateUUID } from "../../utils";
 import DateField from "../../components/DateTimeUCComponent";
 import SingleChoiceUCComponent from "../../components/SingleChoiceUCComponent";
 import Fuse from 'fuse.js'
@@ -89,15 +91,15 @@ const DATA = [
   },
   {
     id: 10,
-label: FieldLabelType.Tag,
+    label: FieldLabelType.Tag,
     page: 9
   },
   {
     id: 11,
     label: FieldLabelType.Submit,
-    },
+  },
 ];
-let fuse: Fuse<any[]>;
+let fuse: any;
 export default function UCLoggingScreen() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -111,6 +113,7 @@ export default function UCLoggingScreen() {
   const [nausea, setNausea] = useState("");
   const [tagSearchText, setTagSearchText] = useState("");
   const [isAutoFullSlideOver, setIsAutoFullSlideOver] = useState(false);
+  const [valueTest, setValueTest] = useState("");
 
   const [currentTagEdit, setCurrentTagEdit] = useState({ id: "", name: "" });
   const [tags, setTags] = useState([]);
@@ -169,19 +172,22 @@ export default function UCLoggingScreen() {
     try {
       const response: any = await API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
         {
-          query: query.searchTags,
-          variables: {
-            filter: { name: { wildcard: "*" } },
-            sort: [{
-              field: SearchableTagSortableFields.createdAt,
-              direction: SearchableSortDirection.asc
-            }]
-          }
+          query: query.listTags,
+          variables: {}
         })
       console.log("Success")
-      console.log("tags", response.data.searchTags.items)
-      setTags(response.data.searchTags.items);
-      fuse = new Fuse(response.data.searchTags.items, { includeScore: true, keys: ['name'] });
+      console.log("tags", response.data.listTags.items)
+      const tagIdInfoMap = {};
+      _.each(tags, tag => {
+        tagIdInfoMap[tag.id] = tag;
+      });
+      _.each(response.data.listTags.items, tag => {
+        if(tagIdInfoMap[tag.id]) {
+          tag.isChecked = tagIdInfoMap[tag.id].isChecked;
+        }
+      });
+      setTags(_.sortBy(response.data.listTags.items, "createdAt"));
+      fuse = new Fuse(response.data.listTags.items, { includeScore: true, keys: ['name'] });
     } catch (err) {
       console.error("Failed to fetch tags");
       console.error(err);
@@ -245,6 +251,7 @@ export default function UCLoggingScreen() {
         if (tag.id != tagId) newTags.push(tag);
       });
       setTags(newTags);
+      fetchTags();
     } catch (err) {
       console.error("Failed to remove tag");
       console.error(err);
@@ -263,9 +270,13 @@ export default function UCLoggingScreen() {
   };
 
   const handleSearch = (value) => {
-    const result = fuse.search(value);
+    let result = fuse.search(value);
+    if(result && result.length == 0 && !value) {
+      setTags(fuse._docs);
+    } else {
+      setTags(_.map(result, tag => tag.item));
+    }
     setTagSearchText(value);
-    setTags(_.map(result, tag => tag.item));
   };
 
   const handleValueSelect = (label, value) => {
@@ -416,138 +427,138 @@ export default function UCLoggingScreen() {
   )
 
   return (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={{ flex: 1, backgroundColor: "#E6DBD9" }}>
+        <Container style={{ backgroundColor: "#E6DBD9" }}>
+          <HeaderViewContainer>
+            <Text text50 style={{ color: "#514D4A", textAlign: "center", width: "100%" }}>My UC Healing Journey</Text>
+          </HeaderViewContainer>
 
-    <View style={{ flex: 1, backgroundColor: "#E6DBD9" }}>
-      <Container style={{ backgroundColor: "#E6DBD9" }}>
-        <HeaderViewContainer>
-          <Text text50 style={{ color: "#514D4A", textAlign: "center", width: "100%" }}>My UC Healing Journey</Text>
-        </HeaderViewContainer>
-
-        <View style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, marginTop: "15%", flexDirection: "row" }}>
-          <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>Nature's Call Report</Text>
-          {!!currentPage && currentPage <= 10 && <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>
-            {!!currentPage ? currentPage : 1}/10
-          </Text>}
-        </View>
-        <View style={{ display: "flex", }}>
-          <Carousel
-            ref={carouselRef}
-            onScrollEnd={handleSlideEnd}
-            style={{
-              height: 700,
-              alignItems: "center",
-              justifyContent: "center",
-              paddingTop: 10
-            }}
-            width={width}
-            pagingEnabled={config.pagingEnabled}
-            snapEnabled={config.snapEnabled}
-            mode={config.mode}
-            loop={config.loop}
-            autoPlay={config.autoPlay}
-            autoPlayReverse={config.autoPlayReverse}
-            data={DATA}
-            modeConfig={{
-              snapDirection: config.snapDirection,
-              stackInterval: config.mode === "vertical-stack" ? 8 : 18,
-            }}
-            customConfig={() => ({ type: "positive", viewCount })}
-            renderItem={({ item }) => (
-              <View>
-                {item.label == FieldLabelType.Submit
-                  ?
-                  <SubmitSection item={item} />
-                  :
-                  item.label != FieldLabelType.Tag
+          <View style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, marginTop: "15%", flexDirection: "row" }}>
+            <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>Nature's Call Report</Text>
+            {!!currentPage && currentPage <= 10 && <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>
+              {!!currentPage ? currentPage : 1}/10
+            </Text>}
+          </View>
+          <View style={{ display: "flex", }}>
+            <Carousel
+              ref={carouselRef}
+              onScrollEnd={handleSlideEnd}
+              style={{
+                height: 700,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingTop: 10
+              }}
+              width={width}
+              pagingEnabled={config.pagingEnabled}
+              snapEnabled={config.snapEnabled}
+              mode={config.mode}
+              loop={config.loop}
+              autoPlay={config.autoPlay}
+              autoPlayReverse={config.autoPlayReverse}
+              data={DATA}
+              modeConfig={{
+                snapDirection: config.snapDirection,
+                stackInterval: config.mode === "vertical-stack" ? 8 : 18,
+              }}
+              customConfig={() => ({ type: "positive", viewCount })}
+              renderItem={({ item }) => (
+                <View>
+                  {item.label == FieldLabelType.Submit
                     ?
-                    <Card
-                      activeOpacity={1}
-                      enableShadow={true}
-                      style={{
-                        borderRadius: 0,
-                        marginHorizontal: 5,
-                        height: 504,
-                        elevation: 10,
-                        backgroundColor: "#F6F1F1",
-                        shadowColor: "#52006A",
-                        shadowOpacity: 0.2,
-                        shadowRadius: 3,
-                        width: "88%",
-                        alignItems: "center",
-                      }}
-                      enableBlur={false}
-                      paddingH-10
-                      paddingV-20
-                      key={item.id}
-                    >
-                      {item.label == FieldLabelType.DateTime && <DateField label={item.label} dateValue={date} timeValue={time} setDateValue={handleDateSelect}
-                        setTimeValue={handleTimeSelect} />}
-                      {item.label == FieldLabelType.Urgency && <SingleChoiceUCComponent label={item.label} value={urgency} handleValueSelect={handleValueSelect} />}
-                      {item.label == FieldLabelType.Consistency && <SingleChoiceUCComponent label={item.label} value={consistency} handleValueSelect={handleValueSelect} />}
-                      {item.label == FieldLabelType.Spray && <SingleChoiceUCComponent label={item.label} value={spray} handleValueSelect={handleValueSelect} />}
-                      {item.label == FieldLabelType.Volume && <SingleChoiceUCComponent label={item.label} value={volume} handleValueSelect={handleValueSelect} />}
-                      {item.label == FieldLabelType.Blood && <SingleChoiceUCComponent label={item.label} value={blood} handleValueSelect={handleValueSelect} />}
-                      {item.label == FieldLabelType.Gas && <SingleChoiceUCComponent label={item.label} value={gas} handleValueSelect={handleValueSelect} />}
-                      {item.label == FieldLabelType.Pain && <SingleChoiceUCComponent label={item.label} value={pain} handleValueSelect={handleValueSelect} />}
-                      {item.label == FieldLabelType.Nausea && <SingleChoiceUCComponent label={item.label} value={nausea} handleValueSelect={handleValueSelect} />}
-
-                    </Card>
-
+                    <SubmitSection item={item} />
                     :
-                    <Card
-                      activeOpacity={1}
-                      enableShadow={true}
-                      style={{
-                        borderRadius: 0,
-                        marginHorizontal: 5,
-                        backgroundColor: "#F6F1F1",
-                        width: "88%",
-                        height: 504,
-                        elevation: 10,
-                        shadowColor: "#52006A",
-                        shadowOpacity: 0.2,
-                        shadowRadius: 3,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      enableBlur={false}
-                      paddingH-10
-                      paddingV-20
-                      key={item.id}
-                    >
+                    item.label != FieldLabelType.Tag
+                      ?
+                      <Card
+                        activeOpacity={1}
+                        enableShadow={true}
+                        style={{
+                          borderRadius: 0,
+                          marginHorizontal: 5,
+                          height: 504,
+                          elevation: 10,
+                          backgroundColor: "#F6F1F1",
+                          shadowColor: "#52006A",
+                          shadowOpacity: 0.2,
+                          shadowRadius: 3,
+                          width: "88%",
+                          alignItems: "center",
+                        }}
+                        enableBlur={false}
+                        paddingH-10
+                        paddingV-20
+                        key={item.id}
+                      >
+                        {item.label == FieldLabelType.DateTime && <DateField label={item.label} dateValue={date} timeValue={time} setDateValue={handleDateSelect}
+                          setTimeValue={handleTimeSelect} />}
+                        {item.label == FieldLabelType.Urgency && <SingleChoiceUCComponent label={item.label} value={urgency} handleValueSelect={handleValueSelect} />}
+                        {item.label == FieldLabelType.Consistency && <SingleChoiceUCComponent label={item.label} value={consistency} handleValueSelect={handleValueSelect} />}
+                        {item.label == FieldLabelType.Spray && <SingleChoiceUCComponent label={item.label} value={spray} handleValueSelect={handleValueSelect} />}
+                        {item.label == FieldLabelType.Volume && <SingleChoiceUCComponent label={item.label} value={volume} handleValueSelect={handleValueSelect} />}
+                        {item.label == FieldLabelType.Blood && <SingleChoiceUCComponent label={item.label} value={blood} handleValueSelect={handleValueSelect} />}
+                        {item.label == FieldLabelType.Gas && <SingleChoiceUCComponent label={item.label} value={gas} handleValueSelect={handleValueSelect} />}
+                        {item.label == FieldLabelType.Pain && <SingleChoiceUCComponent label={item.label} value={pain} handleValueSelect={handleValueSelect} />}
+                        {item.label == FieldLabelType.Nausea && <SingleChoiceUCComponent label={item.label} value={nausea} handleValueSelect={handleValueSelect} />}
 
-                      <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                        <Text
-                          text70
-                          style={{
-                            color: "#312E2B", fontWeight: "700", fontSize: 20, textAlign: "center"
-                          }}
-                        >
-                          {item.label}
-                        </Text>
-                        <FontAwesome
-                          onPress={() => setIsTagEditMode(!isTagEditMode)}
-                          name="edit"
-                          size={21}
-                          color="black"
-                          style={{ marginTop: 3, marginLeft: 15 }}
-                        />
-                      </View>
+                      </Card>
 
-                      <View style={{ paddingHorizontal: 10, marginTop: 10, marginBottom: 20, width: "100%" }}>
-                        <TextField
-                          placeholder={'Filter for a tag...'}
-                          onChangeText={(value) => handleSearch(value)}
-                          style={{ fontWeight: "400", fontSize: 20, marginRight: 10 }}
-                          fieldStyle={{
-                            borderBottomWidth: 1,
-                            borderColor: Colors.$outlineDisabledHeavy,
-                            paddingBottom: 4
-                          }}
-                        />
-                      </View>
-                      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                        <ScrollView style={{ height: 280 }} keyboardShouldPersistTaps="always">
+                      :
+                      <Card
+                        activeOpacity={1}
+                        enableShadow={true}
+                        style={{
+                          borderRadius: 0,
+                          marginHorizontal: 5,
+                          backgroundColor: "#F6F1F1",
+                          width: "88%",
+                          height: 504,
+                          elevation: 10,
+                          shadowColor: "#52006A",
+                          shadowOpacity: 0.2,
+                          shadowRadius: 3,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        enableBlur={false}
+                        paddingH-10
+                        paddingV-20
+                        key={item.id}
+                      >
+
+                        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                          <Text
+                            text70
+                            style={{
+                              color: "#312E2B", fontWeight: "700", fontSize: 20, textAlign: "center"
+                            }}
+                          >
+                            {item.label}
+                          </Text>
+                          <FontAwesome
+                            onPress={() => setIsTagEditMode(!isTagEditMode)}
+                            name="edit"
+                            size={21}
+                            color="black"
+                            style={{ marginTop: 3, marginLeft: 15 }}
+                          />
+                        </View>
+
+                        <View style={{ paddingHorizontal: 10, marginTop: 10, marginBottom: 20, width: "100%" }}>
+                          <TextField
+                            placeholder={'Filter for a tag...'}
+                            onChangeText={(value) => handleSearch(value)}
+                            style={{ fontWeight: "400", fontSize: 20, marginRight: 10 }}
+                            fieldStyle={{
+                              borderBottomWidth: 1,
+                              borderColor: Colors.$outlineDisabledHeavy,
+                              paddingBottom: 4
+                            }}
+                          />
+                        </View>
+
+                        <ScrollView style={{ height: 280 }} automaticallyAdjustKeyboardInsets={true}>
                           {tags.map((tag: any, index: number) => (
                             <View
                               style={{ flexDirection: "row", marginHorizontal: 10 }}
@@ -560,9 +571,6 @@ export default function UCLoggingScreen() {
                                 size={Button.sizes.xSmall}
                                 text60
                                 $textDefault
-                                onPress={() => {
-                                  if (!tag.isEditMode) handleTagChange(tag)
-                                }}
                                 labelStyle={{ fontWeight: "400", fontSize: 20, textAlign: "center", color: "#FFFFFF" }}
                                 style={{
                                   height: 50, backgroundColor: "#FFFFFF", borderColor: "#5C5A57", borderWidth: 1, marginBottom: 13,
@@ -577,7 +585,9 @@ export default function UCLoggingScreen() {
                                 />
 
                                 {
-                                  !isTagEditMode && <Text text80 style={{
+                                  !isTagEditMode && <Text text80  onPress={() => {
+                                    if (!tag.isEditMode) handleTagChange(tag)
+                                  }} style={{
                                     fontWeight: "400", fontSize: 20, width: 200, textAlign: "center",
                                     color: "#312E2B"
                                   }}>
@@ -590,7 +600,7 @@ export default function UCLoggingScreen() {
                                     <Text text80 style={{
                                       fontWeight: "400", fontSize: 20, width: 170, textAlign: "center",
                                       color: "#312E2B"
-                                    }}>
+                                    }}  onPress={() => {if (!tag.isEditMode) handleTagChange(tag)}}>
                                       {tag.name ? tag.name : ""}
                                     </Text>
                                     <AntDesign
@@ -644,19 +654,18 @@ export default function UCLoggingScreen() {
                             </Text>
                             {isLoading && <ActivityIndicator color={'black'} />}
                           </View>
-
+                          <View style={{ height: 150 }} />
                         </ScrollView>
-                      </TouchableWithoutFeedback>
-                    </Card>
-                }
-              </View>
-            )}
-          />
+                      </Card>
+                  }
+                </View>
+              )}
+            />
 
-        </View>
-      </Container>
-    </View>
-
+          </View>
+        </Container>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

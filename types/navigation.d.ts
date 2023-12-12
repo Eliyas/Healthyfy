@@ -11,6 +11,7 @@ type AuthNavigationType = {
 type TabNavigationType = {
   UCLogging: undefined;
   Home: undefined;
+  MyStats: undefined;
 };
 
 //tabs nav types

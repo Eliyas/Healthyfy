@@ -4,6 +4,7 @@
 export const FieldLabelType = {
     DateTime: "Date & Time",
     Time: "Time",
+    Urgency_Only: "Urgency",
     Urgency: "Gauging Urgency",
     Consistency: "Consistency",
     Spray: "Spray",
