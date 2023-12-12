@@ -25,7 +25,7 @@ import * as mutation from "../../src/graphql/mutations";
 import * as query from "../../src/graphql/queries";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
-import { generateUUID } from "../../utils";
+import { generateUUID } from "../../utils"; 
 import DateField from "../../components/DateTimeUCComponent";
 import SingleChoiceUCComponent from "../../components/SingleChoiceUCComponent";
 import Fuse from 'fuse.js'
