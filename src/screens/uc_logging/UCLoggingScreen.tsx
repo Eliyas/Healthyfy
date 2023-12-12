@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import Carousel from "react-native-reanimated-carousel";
-import { ActivityIndicator, Dimensions, Keyboard, KeyboardAvoidingView, Platform, StatusBar, TouchableWithoutFeedback } from "react-native";
+import { ActivityIndicator, Dimensions, Keyboard, TouchableWithoutFeedback } from "react-native";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import _ from "lodash";
 import {
@@ -15,14 +15,15 @@ import {
   TextField,
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
-import { CreateReportInput, CreateReportMutation, CreateReportTagsMutation, CreateTagMutation, CreateTagMutationVariables, DeleteTagMutation, ReportType, SearchTagsQueryVariables, SearchableSortDirection, SearchableTagSortableFields } from "../../src/API";
+import { CreateReportInput, CreateReportMutation, CreateReportTagsMutation, 
+   ReportType, SearchTagsQueryVariables, SearchableSortDirection, SearchableTagSortableFields } from "../../API";
 import { GraphQLQuery } from '@aws-amplify/api';
-import { API, graphqlOperation } from 'aws-amplify';
-import * as mutations from '../../src/graphql/mutations';
-import { CreateTagInput, DeleteTagInput } from "../../src/API";
+import { API } from 'aws-amplify';
+import * as mutations from '../../graphql/mutations';
+import { CreateTagInput, DeleteTagInput } from "../../API";
 import moment from "moment";
-import * as mutation from "../../src/graphql/mutations";
-import * as query from "../../src/graphql/queries";
+import * as mutation from "../../graphql/mutations";
+import * as query from "../../graphql/queries";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import { generateUUID } from "../../utils"; 
