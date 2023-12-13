@@ -16,8 +16,7 @@ import {
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
 import {
-  CreateReportInput, CreateReportMutation, CreateReportTagsMutation,
-  ReportType, SearchTagsQueryVariables, SearchableSortDirection, SearchableTagSortableFields
+  CreateReportInput, CreateReportMutation, GetProfileQueryVariables, ListTagsQueryVariables, ModelTagFilterInput, ReportType
 } from "../../API";
 import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
@@ -32,6 +31,7 @@ import { generateUUID } from "../../utils";
 import DateField from "../../components/DateTimeUCComponent";
 import SingleChoiceUCComponent from "../../components/SingleChoiceUCComponent";
 import Fuse from 'fuse.js'
+import DeviceInfo from 'react-native-device-info';
 
 const config: any = {
   mode: "horizontal-stack",
@@ -101,8 +101,8 @@ const DATA = [
 ];
 let fuse: any;
 export default function UCLoggingScreen() {
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
   const [urgency, setUrgency] = useState("");
   const [consistency, setConsistency] = useState("");
   const [spray, setSpray] = useState("");
@@ -114,7 +114,6 @@ export default function UCLoggingScreen() {
   const [tagSearchText, setTagSearchText] = useState("");
   const [isAutoFullSlideOver, setIsAutoFullSlideOver] = useState(false);
   const [valueTest, setValueTest] = useState("");
-
   const [currentTagEdit, setCurrentTagEdit] = useState({ id: "", name: "" });
   const [tags, setTags] = useState([]);
   const [isTagEditMode, setIsTagEditMode] = useState(false);
@@ -125,6 +124,7 @@ export default function UCLoggingScreen() {
     message: "",
     isShowToast: false
   });
+  const [profileId, setProfileId] = useState("");
   const carouselRef: any = useRef();
   const width = Dimensions.get('window').width;
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
@@ -149,7 +149,10 @@ export default function UCLoggingScreen() {
   }, [toastInfo.isShowToast]);
 
   useEffect(() => {
-    fetchTags();
+    DeviceInfo.getUniqueId().then((id) => {
+      setProfileId(id);
+      fetchTags(id);
+    });
   }, []);
 
   const nextSlide = () => {
@@ -168,12 +171,16 @@ export default function UCLoggingScreen() {
 
   console.log("Rerendering!");
 
-  const fetchTags = async () => {
+  const fetchTags = async (deviceId: string) => {
     try {
-      const response: any = await API.graphql<GraphQLQuery<SearchTagsQueryVariables>>(
+      console.log("DeviceId ", deviceId);
+      const input: ListTagsQueryVariables = {
+        filter: { profileTagsId: { eq: deviceId } }
+      }
+      const response: any = await API.graphql<GraphQLQuery<ListTagsQueryVariables>>(
         {
           query: query.listTags,
-          variables: {}
+          variables: input
         })
       console.log("Success")
       console.log("tags", response.data.listTags.items)
@@ -182,7 +189,7 @@ export default function UCLoggingScreen() {
         tagIdInfoMap[tag.id] = tag;
       });
       _.each(response.data.listTags.items, tag => {
-        if(tagIdInfoMap[tag.id]) {
+        if (tagIdInfoMap[tag.id]) {
           tag.isChecked = tagIdInfoMap[tag.id].isChecked;
         }
       });
@@ -213,7 +220,7 @@ export default function UCLoggingScreen() {
 
   const saveCurrentTag = async () => {
     if (!currentTagEdit.name) return;
-    const input: CreateTagInput = { name: currentTagEdit.name };
+    const input: CreateTagInput = { name: currentTagEdit.name, profileTagsId: profileId };
     console.log("input ", input)
     setIsLoading(true);
     try {
@@ -225,7 +232,7 @@ export default function UCLoggingScreen() {
       console.log("Success")
       console.log("newTodo", newTag);
       setCurrentTagEdit(null);
-      fetchTags();
+      fetchTags(profileId);
       setIsLoading(false);
     } catch (err) {
       console.error("Failed to add tag");
@@ -251,7 +258,7 @@ export default function UCLoggingScreen() {
         if (tag.id != tagId) newTags.push(tag);
       });
       setTags(newTags);
-      fetchTags();
+      fetchTags(profileId);
     } catch (err) {
       console.error("Failed to remove tag");
       console.error(err);
@@ -271,7 +278,7 @@ export default function UCLoggingScreen() {
 
   const handleSearch = (value) => {
     let result = fuse.search(value);
-    if(result && result.length == 0 && !value) {
+    if (result && result.length == 0 && !value) {
       setTags(fuse._docs);
     } else {
       setTags(_.map(result, tag => tag.item));
@@ -317,7 +324,7 @@ export default function UCLoggingScreen() {
 
     let reportTagsInput = [];
     _.each(tags, (tag) => {
-      if (tag.isChecked) reportTagsInput.push({ reportID: "", tagID: tag.id })
+      if (tag.isChecked) reportTagsInput.push({ reportTagsId: "", name: tag.name })
     });
 
     try {
@@ -325,16 +332,17 @@ export default function UCLoggingScreen() {
         {
           query: mutations.createReport, variables: { input }
         });
-
+      console.log("input", input);
       _.each(reportTagsInput, tag => {
-        tag.reportID = reportResponse.data.createReport.id;
+        tag.reportTagsId = reportResponse.data.createReport.id;
+        tag.profileTagsId = profileId;
       });
 
       console.log(" reportTagsInput ", reportTagsInput)
       const promises = _.map(reportTagsInput, input => {
-        return API.graphql<GraphQLQuery<CreateReportTagsMutation>>(
+        return API.graphql<GraphQLQuery<CreateTagInput>>(
           {
-            query: mutations.createReportTags,
+            query: mutations.createTag,
             variables: { input }
           })
       });
@@ -351,8 +359,8 @@ export default function UCLoggingScreen() {
   }
 
   const handleReset = () => {
-    setDate("");
-    setTime("");
+    setDate(new Date());
+    setTime(new Date());
     setUrgency("");
     setConsistency("");
     setBlood("");
@@ -360,7 +368,6 @@ export default function UCLoggingScreen() {
     setSpray("");
     setPain("");
     setNausea("");
-    setDate("");
     setIsAutoFullSlideOver(false);
     if (carouselRef.current) {
       carouselRef.current.scrollTo({ count: -10, animated: true });
@@ -585,7 +592,7 @@ export default function UCLoggingScreen() {
                                 />
 
                                 {
-                                  !isTagEditMode && <Text text80  onPress={() => {
+                                  !isTagEditMode && <Text text80 onPress={() => {
                                     if (!tag.isEditMode) handleTagChange(tag)
                                   }} style={{
                                     fontWeight: "400", fontSize: 20, width: 200, textAlign: "center",
@@ -600,7 +607,7 @@ export default function UCLoggingScreen() {
                                     <Text text80 style={{
                                       fontWeight: "400", fontSize: 20, width: 170, textAlign: "center",
                                       color: "#312E2B"
-                                    }}  onPress={() => {if (!tag.isEditMode) handleTagChange(tag)}}>
+                                    }} onPress={() => { if (!tag.isEditMode) handleTagChange(tag) }}>
                                       {tag.name ? tag.name : ""}
                                     </Text>
                                     <AntDesign

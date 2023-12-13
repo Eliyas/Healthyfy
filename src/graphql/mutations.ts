@@ -8,16 +8,17 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
-export const createReport = /* GraphQL */ `mutation CreateReport(
-  $input: CreateReportInput!
-  $condition: ModelReportConditionInput
+export const createProfile = /* GraphQL */ `mutation CreateProfile(
+  $input: CreateProfileInput!
+  $condition: ModelProfileConditionInput
 ) {
-  createReport(input: $input, condition: $condition) {
+  createProfile(input: $input, condition: $condition) {
     id
-    dateTime
-    data
-    type
-    reportTags {
+    tags {
+      nextToken
+      __typename
+    }
+    reports {
       nextToken
       __typename
     }
@@ -27,19 +28,20 @@ export const createReport = /* GraphQL */ `mutation CreateReport(
   }
 }
 ` as GeneratedMutation<
-  APITypes.CreateReportMutationVariables,
-  APITypes.CreateReportMutation
+  APITypes.CreateProfileMutationVariables,
+  APITypes.CreateProfileMutation
 >;
-export const updateReport = /* GraphQL */ `mutation UpdateReport(
-  $input: UpdateReportInput!
-  $condition: ModelReportConditionInput
+export const updateProfile = /* GraphQL */ `mutation UpdateProfile(
+  $input: UpdateProfileInput!
+  $condition: ModelProfileConditionInput
 ) {
-  updateReport(input: $input, condition: $condition) {
+  updateProfile(input: $input, condition: $condition) {
     id
-    dateTime
-    data
-    type
-    reportTags {
+    tags {
+      nextToken
+      __typename
+    }
+    reports {
       nextToken
       __typename
     }
@@ -49,19 +51,20 @@ export const updateReport = /* GraphQL */ `mutation UpdateReport(
   }
 }
 ` as GeneratedMutation<
-  APITypes.UpdateReportMutationVariables,
-  APITypes.UpdateReportMutation
+  APITypes.UpdateProfileMutationVariables,
+  APITypes.UpdateProfileMutation
 >;
-export const deleteReport = /* GraphQL */ `mutation DeleteReport(
-  $input: DeleteReportInput!
-  $condition: ModelReportConditionInput
+export const deleteProfile = /* GraphQL */ `mutation DeleteProfile(
+  $input: DeleteProfileInput!
+  $condition: ModelProfileConditionInput
 ) {
-  deleteReport(input: $input, condition: $condition) {
+  deleteProfile(input: $input, condition: $condition) {
     id
-    dateTime
-    data
-    type
-    reportTags {
+    tags {
+      nextToken
+      __typename
+    }
+    reports {
       nextToken
       __typename
     }
@@ -71,8 +74,8 @@ export const deleteReport = /* GraphQL */ `mutation DeleteReport(
   }
 }
 ` as GeneratedMutation<
-  APITypes.DeleteReportMutationVariables,
-  APITypes.DeleteReportMutation
+  APITypes.DeleteProfileMutationVariables,
+  APITypes.DeleteProfileMutation
 >;
 export const createTag = /* GraphQL */ `mutation CreateTag(
   $input: CreateTagInput!
@@ -83,6 +86,8 @@ export const createTag = /* GraphQL */ `mutation CreateTag(
     name
     createdAt
     updatedAt
+    profileTagsId
+    reportTagsId
     __typename
   }
 }
@@ -99,6 +104,8 @@ export const updateTag = /* GraphQL */ `mutation UpdateTag(
     name
     createdAt
     updatedAt
+    profileTagsId
+    reportTagsId
     __typename
   }
 }
@@ -115,6 +122,8 @@ export const deleteTag = /* GraphQL */ `mutation DeleteTag(
     name
     createdAt
     updatedAt
+    profileTagsId
+    reportTagsId
     __typename
   }
 }
@@ -122,102 +131,72 @@ export const deleteTag = /* GraphQL */ `mutation DeleteTag(
   APITypes.DeleteTagMutationVariables,
   APITypes.DeleteTagMutation
 >;
-export const createReportTags = /* GraphQL */ `mutation CreateReportTags(
-  $input: CreateReportTagsInput!
-  $condition: ModelReportTagsConditionInput
+export const createReport = /* GraphQL */ `mutation CreateReport(
+  $input: CreateReportInput!
+  $condition: ModelReportConditionInput
 ) {
-  createReportTags(input: $input, condition: $condition) {
+  createReport(input: $input, condition: $condition) {
     id
-    reportID
-    tagID
-    report {
-      id
-      dateTime
-      data
-      type
-      createdAt
-      updatedAt
-      __typename
-    }
-    tag {
-      id
-      name
-      createdAt
-      updatedAt
+    dateTime
+    data
+    type
+    tags {
+      nextToken
       __typename
     }
     createdAt
     updatedAt
+    profileReportsId
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.CreateReportTagsMutationVariables,
-  APITypes.CreateReportTagsMutation
+  APITypes.CreateReportMutationVariables,
+  APITypes.CreateReportMutation
 >;
-export const updateReportTags = /* GraphQL */ `mutation UpdateReportTags(
-  $input: UpdateReportTagsInput!
-  $condition: ModelReportTagsConditionInput
+export const updateReport = /* GraphQL */ `mutation UpdateReport(
+  $input: UpdateReportInput!
+  $condition: ModelReportConditionInput
 ) {
-  updateReportTags(input: $input, condition: $condition) {
+  updateReport(input: $input, condition: $condition) {
     id
-    reportID
-    tagID
-    report {
-      id
-      dateTime
-      data
-      type
-      createdAt
-      updatedAt
-      __typename
-    }
-    tag {
-      id
-      name
-      createdAt
-      updatedAt
+    dateTime
+    data
+    type
+    tags {
+      nextToken
       __typename
     }
     createdAt
     updatedAt
+    profileReportsId
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.UpdateReportTagsMutationVariables,
-  APITypes.UpdateReportTagsMutation
+  APITypes.UpdateReportMutationVariables,
+  APITypes.UpdateReportMutation
 >;
-export const deleteReportTags = /* GraphQL */ `mutation DeleteReportTags(
-  $input: DeleteReportTagsInput!
-  $condition: ModelReportTagsConditionInput
+export const deleteReport = /* GraphQL */ `mutation DeleteReport(
+  $input: DeleteReportInput!
+  $condition: ModelReportConditionInput
 ) {
-  deleteReportTags(input: $input, condition: $condition) {
+  deleteReport(input: $input, condition: $condition) {
     id
-    reportID
-    tagID
-    report {
-      id
-      dateTime
-      data
-      type
-      createdAt
-      updatedAt
-      __typename
-    }
-    tag {
-      id
-      name
-      createdAt
-      updatedAt
+    dateTime
+    data
+    type
+    tags {
+      nextToken
       __typename
     }
     createdAt
     updatedAt
+    profileReportsId
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.DeleteReportTagsMutationVariables,
-  APITypes.DeleteReportTagsMutation
+  APITypes.DeleteReportMutationVariables,
+  APITypes.DeleteReportMutation
 >;

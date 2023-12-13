@@ -2,11 +2,57 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateReportInput = {
+export type CreateProfileInput = {
   id?: string | null,
+};
+
+export type ModelProfileConditionInput = {
+  and?: Array< ModelProfileConditionInput | null > | null,
+  or?: Array< ModelProfileConditionInput | null > | null,
+  not?: ModelProfileConditionInput | null,
+};
+
+export type Profile = {
+  __typename: "Profile",
+  id: string,
+  tags?: ModelTagConnection | null,
+  reports?: ModelReportConnection | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type ModelTagConnection = {
+  __typename: "ModelTagConnection",
+  items:  Array<Tag | null >,
+  nextToken?: string | null,
+};
+
+export type Tag = {
+  __typename: "Tag",
+  id: string,
+  name: string,
+  createdAt: string,
+  updatedAt: string,
+  profileTagsId?: string | null,
+  reportTagsId?: string | null,
+};
+
+export type ModelReportConnection = {
+  __typename: "ModelReportConnection",
+  items:  Array<Report | null >,
+  nextToken?: string | null,
+};
+
+export type Report = {
+  __typename: "Report",
+  id: string,
   dateTime: string,
   data: string,
   type?: ReportType | null,
+  tags?: ModelTagConnection | null,
+  createdAt: string,
+  updatedAt: string,
+  profileReportsId?: string | null,
 };
 
 export enum ReportType {
@@ -14,13 +60,28 @@ export enum ReportType {
 }
 
 
-export type ModelReportConditionInput = {
-  dateTime?: ModelStringInput | null,
-  data?: ModelStringInput | null,
-  type?: ModelReportTypeInput | null,
-  and?: Array< ModelReportConditionInput | null > | null,
-  or?: Array< ModelReportConditionInput | null > | null,
-  not?: ModelReportConditionInput | null,
+export type UpdateProfileInput = {
+  id: string,
+};
+
+export type DeleteProfileInput = {
+  id: string,
+};
+
+export type CreateTagInput = {
+  id?: string | null,
+  name: string,
+  profileTagsId?: string | null,
+  reportTagsId?: string | null,
+};
+
+export type ModelTagConditionInput = {
+  name?: ModelStringInput | null,
+  and?: Array< ModelTagConditionInput | null > | null,
+  or?: Array< ModelTagConditionInput | null > | null,
+  not?: ModelTagConditionInput | null,
+  profileTagsId?: ModelIDInput | null,
+  reportTagsId?: ModelIDInput | null,
 };
 
 export type ModelStringInput = {
@@ -63,93 +124,6 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
-export type ModelReportTypeInput = {
-  eq?: ReportType | null,
-  ne?: ReportType | null,
-};
-
-export type Report = {
-  __typename: "Report",
-  id: string,
-  dateTime: string,
-  data: string,
-  type?: ReportType | null,
-  reportTags?: ModelReportTagsConnection | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type ModelReportTagsConnection = {
-  __typename: "ModelReportTagsConnection",
-  items:  Array<ReportTags | null >,
-  nextToken?: string | null,
-};
-
-export type ReportTags = {
-  __typename: "ReportTags",
-  id: string,
-  reportID: string,
-  tagID: string,
-  report?: Report | null,
-  tag?: Tag | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type Tag = {
-  __typename: "Tag",
-  id: string,
-  name: string,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type UpdateReportInput = {
-  id: string,
-  dateTime?: string | null,
-  data?: string | null,
-  type?: ReportType | null,
-};
-
-export type DeleteReportInput = {
-  id: string,
-};
-
-export type CreateTagInput = {
-  id?: string | null,
-  name: string,
-};
-
-export type ModelTagConditionInput = {
-  name?: ModelStringInput | null,
-  and?: Array< ModelTagConditionInput | null > | null,
-  or?: Array< ModelTagConditionInput | null > | null,
-  not?: ModelTagConditionInput | null,
-};
-
-export type UpdateTagInput = {
-  id: string,
-  name?: string | null,
-};
-
-export type DeleteTagInput = {
-  id: string,
-};
-
-export type CreateReportTagsInput = {
-  id?: string | null,
-  reportID: string,
-  tagID: string,
-};
-
-export type ModelReportTagsConditionInput = {
-  reportID?: ModelIDInput | null,
-  tagID?: ModelIDInput | null,
-  and?: Array< ModelReportTagsConditionInput | null > | null,
-  or?: Array< ModelReportTagsConditionInput | null > | null,
-  not?: ModelReportTagsConditionInput | null,
-};
-
 export type ModelIDInput = {
   ne?: string | null,
   eq?: string | null,
@@ -166,133 +140,73 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
-export type UpdateReportTagsInput = {
+export type UpdateTagInput = {
   id: string,
-  reportID?: string | null,
-  tagID?: string | null,
+  name?: string | null,
+  profileTagsId?: string | null,
+  reportTagsId?: string | null,
 };
 
-export type DeleteReportTagsInput = {
+export type DeleteTagInput = {
   id: string,
 };
 
-export type SearchableTagFilterInput = {
-  id?: SearchableIDFilterInput | null,
-  name?: SearchableStringFilterInput | null,
-  createdAt?: SearchableStringFilterInput | null,
-  updatedAt?: SearchableStringFilterInput | null,
-  and?: Array< SearchableTagFilterInput | null > | null,
-  or?: Array< SearchableTagFilterInput | null > | null,
-  not?: SearchableTagFilterInput | null,
+export type CreateReportInput = {
+  id?: string | null,
+  dateTime: string,
+  data: string,
+  type?: ReportType | null,
+  profileReportsId?: string | null,
 };
 
-export type SearchableIDFilterInput = {
-  ne?: string | null,
-  gt?: string | null,
-  lt?: string | null,
-  gte?: string | null,
-  lte?: string | null,
-  eq?: string | null,
-  match?: string | null,
-  matchPhrase?: string | null,
-  matchPhrasePrefix?: string | null,
-  multiMatch?: string | null,
-  exists?: boolean | null,
-  wildcard?: string | null,
-  regexp?: string | null,
-  range?: Array< string | null > | null,
+export type ModelReportConditionInput = {
+  dateTime?: ModelStringInput | null,
+  data?: ModelStringInput | null,
+  type?: ModelReportTypeInput | null,
+  and?: Array< ModelReportConditionInput | null > | null,
+  or?: Array< ModelReportConditionInput | null > | null,
+  not?: ModelReportConditionInput | null,
+  profileReportsId?: ModelIDInput | null,
 };
 
-export type SearchableStringFilterInput = {
-  ne?: string | null,
-  gt?: string | null,
-  lt?: string | null,
-  gte?: string | null,
-  lte?: string | null,
-  eq?: string | null,
-  match?: string | null,
-  matchPhrase?: string | null,
-  matchPhrasePrefix?: string | null,
-  multiMatch?: string | null,
-  exists?: boolean | null,
-  wildcard?: string | null,
-  regexp?: string | null,
-  range?: Array< string | null > | null,
+export type ModelReportTypeInput = {
+  eq?: ReportType | null,
+  ne?: ReportType | null,
 };
 
-export type SearchableTagSortInput = {
-  field?: SearchableTagSortableFields | null,
-  direction?: SearchableSortDirection | null,
+export type UpdateReportInput = {
+  id: string,
+  dateTime?: string | null,
+  data?: string | null,
+  type?: ReportType | null,
+  profileReportsId?: string | null,
 };
 
-export enum SearchableTagSortableFields {
-  id = "id",
-  name = "name",
-  createdAt = "createdAt",
-  updatedAt = "updatedAt",
-}
-
-
-export enum SearchableSortDirection {
-  asc = "asc",
-  desc = "desc",
-}
-
-
-export type SearchableTagAggregationInput = {
-  name: string,
-  type: SearchableAggregateType,
-  field: SearchableTagAggregateField,
+export type DeleteReportInput = {
+  id: string,
 };
 
-export enum SearchableAggregateType {
-  terms = "terms",
-  avg = "avg",
-  min = "min",
-  max = "max",
-  sum = "sum",
-}
+export type ModelProfileFilterInput = {
+  id?: ModelIDInput | null,
+  and?: Array< ModelProfileFilterInput | null > | null,
+  or?: Array< ModelProfileFilterInput | null > | null,
+  not?: ModelProfileFilterInput | null,
+};
 
-
-export enum SearchableTagAggregateField {
-  id = "id",
-  name = "name",
-  createdAt = "createdAt",
-  updatedAt = "updatedAt",
-}
-
-
-export type SearchableTagConnection = {
-  __typename: "SearchableTagConnection",
-  items:  Array<Tag | null >,
+export type ModelProfileConnection = {
+  __typename: "ModelProfileConnection",
+  items:  Array<Profile | null >,
   nextToken?: string | null,
-  total?: number | null,
-  aggregateItems:  Array<SearchableAggregateResult | null >,
 };
 
-export type SearchableAggregateResult = {
-  __typename: "SearchableAggregateResult",
-  name: string,
-  result?: SearchableAggregateGenericResult | null,
-};
-
-export type SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
-
-
-export type SearchableAggregateScalarResult = {
-  __typename: "SearchableAggregateScalarResult",
-  value: number,
-};
-
-export type SearchableAggregateBucketResult = {
-  __typename: "SearchableAggregateBucketResult",
-  buckets?:  Array<SearchableAggregateBucketResultItem | null > | null,
-};
-
-export type SearchableAggregateBucketResultItem = {
-  __typename: "SearchableAggregateBucketResultItem",
-  key: string,
-  doc_count: number,
+export type ModelTagFilterInput = {
+  id?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  and?: Array< ModelTagFilterInput | null > | null,
+  or?: Array< ModelTagFilterInput | null > | null,
+  not?: ModelTagFilterInput | null,
+  profileTagsId?: ModelIDInput | null,
+  reportTagsId?: ModelIDInput | null,
 };
 
 export type ModelReportFilterInput = {
@@ -303,68 +217,16 @@ export type ModelReportFilterInput = {
   and?: Array< ModelReportFilterInput | null > | null,
   or?: Array< ModelReportFilterInput | null > | null,
   not?: ModelReportFilterInput | null,
+  profileReportsId?: ModelIDInput | null,
 };
 
-export type ModelReportConnection = {
-  __typename: "ModelReportConnection",
-  items:  Array<Report | null >,
-  nextToken?: string | null,
-};
-
-export type ModelTagFilterInput = {
-  id?: ModelIDInput | null,
-  name?: ModelStringInput | null,
-  and?: Array< ModelTagFilterInput | null > | null,
-  or?: Array< ModelTagFilterInput | null > | null,
-  not?: ModelTagFilterInput | null,
-};
-
-export type ModelTagConnection = {
-  __typename: "ModelTagConnection",
-  items:  Array<Tag | null >,
-  nextToken?: string | null,
-};
-
-export type ModelReportTagsFilterInput = {
-  id?: ModelIDInput | null,
-  reportID?: ModelIDInput | null,
-  tagID?: ModelIDInput | null,
-  and?: Array< ModelReportTagsFilterInput | null > | null,
-  or?: Array< ModelReportTagsFilterInput | null > | null,
-  not?: ModelReportTagsFilterInput | null,
-};
-
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
-export type ModelSubscriptionReportFilterInput = {
+export type ModelSubscriptionProfileFilterInput = {
   id?: ModelSubscriptionIDInput | null,
-  dateTime?: ModelSubscriptionStringInput | null,
-  data?: ModelSubscriptionStringInput | null,
-  type?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionReportFilterInput | null > | null,
-  or?: Array< ModelSubscriptionReportFilterInput | null > | null,
+  and?: Array< ModelSubscriptionProfileFilterInput | null > | null,
+  or?: Array< ModelSubscriptionProfileFilterInput | null > | null,
 };
 
 export type ModelSubscriptionIDInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-  in?: Array< string | null > | null,
-  notIn?: Array< string | null > | null,
-};
-
-export type ModelSubscriptionStringInput = {
   ne?: string | null,
   eq?: string | null,
   le?: string | null,
@@ -386,28 +248,45 @@ export type ModelSubscriptionTagFilterInput = {
   or?: Array< ModelSubscriptionTagFilterInput | null > | null,
 };
 
-export type ModelSubscriptionReportTagsFilterInput = {
+export type ModelSubscriptionStringInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  in?: Array< string | null > | null,
+  notIn?: Array< string | null > | null,
+};
+
+export type ModelSubscriptionReportFilterInput = {
   id?: ModelSubscriptionIDInput | null,
-  reportID?: ModelSubscriptionIDInput | null,
-  tagID?: ModelSubscriptionIDInput | null,
-  and?: Array< ModelSubscriptionReportTagsFilterInput | null > | null,
-  or?: Array< ModelSubscriptionReportTagsFilterInput | null > | null,
+  dateTime?: ModelSubscriptionStringInput | null,
+  data?: ModelSubscriptionStringInput | null,
+  type?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionReportFilterInput | null > | null,
+  or?: Array< ModelSubscriptionReportFilterInput | null > | null,
 };
 
-export type CreateReportMutationVariables = {
-  input: CreateReportInput,
-  condition?: ModelReportConditionInput | null,
+export type CreateProfileMutationVariables = {
+  input: CreateProfileInput,
+  condition?: ModelProfileConditionInput | null,
 };
 
-export type CreateReportMutation = {
-  createReport?:  {
-    __typename: "Report",
+export type CreateProfileMutation = {
+  createProfile?:  {
+    __typename: "Profile",
     id: string,
-    dateTime: string,
-    data: string,
-    type?: ReportType | null,
-    reportTags?:  {
-      __typename: "ModelReportTagsConnection",
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    reports?:  {
+      __typename: "ModelReportConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -415,20 +294,21 @@ export type CreateReportMutation = {
   } | null,
 };
 
-export type UpdateReportMutationVariables = {
-  input: UpdateReportInput,
-  condition?: ModelReportConditionInput | null,
+export type UpdateProfileMutationVariables = {
+  input: UpdateProfileInput,
+  condition?: ModelProfileConditionInput | null,
 };
 
-export type UpdateReportMutation = {
-  updateReport?:  {
-    __typename: "Report",
+export type UpdateProfileMutation = {
+  updateProfile?:  {
+    __typename: "Profile",
     id: string,
-    dateTime: string,
-    data: string,
-    type?: ReportType | null,
-    reportTags?:  {
-      __typename: "ModelReportTagsConnection",
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    reports?:  {
+      __typename: "ModelReportConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -436,20 +316,21 @@ export type UpdateReportMutation = {
   } | null,
 };
 
-export type DeleteReportMutationVariables = {
-  input: DeleteReportInput,
-  condition?: ModelReportConditionInput | null,
+export type DeleteProfileMutationVariables = {
+  input: DeleteProfileInput,
+  condition?: ModelProfileConditionInput | null,
 };
 
-export type DeleteReportMutation = {
-  deleteReport?:  {
-    __typename: "Report",
+export type DeleteProfileMutation = {
+  deleteProfile?:  {
+    __typename: "Profile",
     id: string,
-    dateTime: string,
-    data: string,
-    type?: ReportType | null,
-    reportTags?:  {
-      __typename: "ModelReportTagsConnection",
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    reports?:  {
+      __typename: "ModelReportConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -469,6 +350,8 @@ export type CreateTagMutation = {
     name: string,
     createdAt: string,
     updatedAt: string,
+    profileTagsId?: string | null,
+    reportTagsId?: string | null,
   } | null,
 };
 
@@ -484,6 +367,8 @@ export type UpdateTagMutation = {
     name: string,
     createdAt: string,
     updatedAt: string,
+    profileTagsId?: string | null,
+    reportTagsId?: string | null,
   } | null,
 };
 
@@ -499,142 +384,152 @@ export type DeleteTagMutation = {
     name: string,
     createdAt: string,
     updatedAt: string,
+    profileTagsId?: string | null,
+    reportTagsId?: string | null,
   } | null,
 };
 
-export type CreateReportTagsMutationVariables = {
-  input: CreateReportTagsInput,
-  condition?: ModelReportTagsConditionInput | null,
+export type CreateReportMutationVariables = {
+  input: CreateReportInput,
+  condition?: ModelReportConditionInput | null,
 };
 
-export type CreateReportTagsMutation = {
-  createReportTags?:  {
-    __typename: "ReportTags",
+export type CreateReportMutation = {
+  createReport?:  {
+    __typename: "Report",
     id: string,
-    reportID: string,
-    tagID: string,
-    report?:  {
-      __typename: "Report",
-      id: string,
-      dateTime: string,
-      data: string,
-      type?: ReportType | null,
-      createdAt: string,
-      updatedAt: string,
+    dateTime: string,
+    data: string,
+    type?: ReportType | null,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
     } | null,
-    tag?:  {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
+    createdAt: string,
+    updatedAt: string,
+    profileReportsId?: string | null,
+  } | null,
+};
+
+export type UpdateReportMutationVariables = {
+  input: UpdateReportInput,
+  condition?: ModelReportConditionInput | null,
+};
+
+export type UpdateReportMutation = {
+  updateReport?:  {
+    __typename: "Report",
+    id: string,
+    dateTime: string,
+    data: string,
+    type?: ReportType | null,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    profileReportsId?: string | null,
+  } | null,
+};
+
+export type DeleteReportMutationVariables = {
+  input: DeleteReportInput,
+  condition?: ModelReportConditionInput | null,
+};
+
+export type DeleteReportMutation = {
+  deleteReport?:  {
+    __typename: "Report",
+    id: string,
+    dateTime: string,
+    data: string,
+    type?: ReportType | null,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    profileReportsId?: string | null,
+  } | null,
+};
+
+export type GetProfileQueryVariables = {
+  id: string,
+};
+
+export type GetProfileQuery = {
+  getProfile?:  {
+    __typename: "Profile",
+    id: string,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    reports?:  {
+      __typename: "ModelReportConnection",
+      nextToken?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
-export type UpdateReportTagsMutationVariables = {
-  input: UpdateReportTagsInput,
-  condition?: ModelReportTagsConditionInput | null,
-};
-
-export type UpdateReportTagsMutation = {
-  updateReportTags?:  {
-    __typename: "ReportTags",
-    id: string,
-    reportID: string,
-    tagID: string,
-    report?:  {
-      __typename: "Report",
-      id: string,
-      dateTime: string,
-      data: string,
-      type?: ReportType | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    tag?:  {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type DeleteReportTagsMutationVariables = {
-  input: DeleteReportTagsInput,
-  condition?: ModelReportTagsConditionInput | null,
-};
-
-export type DeleteReportTagsMutation = {
-  deleteReportTags?:  {
-    __typename: "ReportTags",
-    id: string,
-    reportID: string,
-    tagID: string,
-    report?:  {
-      __typename: "Report",
-      id: string,
-      dateTime: string,
-      data: string,
-      type?: ReportType | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    tag?:  {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type SearchTagsQueryVariables = {
-  filter?: SearchableTagFilterInput | null,
-  sort?: Array< SearchableTagSortInput | null > | null,
+export type ListProfilesQueryVariables = {
+  filter?: ModelProfileFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
-  from?: number | null,
-  aggregates?: Array< SearchableTagAggregationInput | null > | null,
 };
 
-export type SearchTagsQuery = {
-  searchTags?:  {
-    __typename: "SearchableTagConnection",
+export type ListProfilesQuery = {
+  listProfiles?:  {
+    __typename: "ModelProfileConnection",
+    items:  Array< {
+      __typename: "Profile",
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetTagQueryVariables = {
+  id: string,
+};
+
+export type GetTagQuery = {
+  getTag?:  {
+    __typename: "Tag",
+    id: string,
+    name: string,
+    createdAt: string,
+    updatedAt: string,
+    profileTagsId?: string | null,
+    reportTagsId?: string | null,
+  } | null,
+};
+
+export type ListTagsQueryVariables = {
+  filter?: ModelTagFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListTagsQuery = {
+  listTags?:  {
+    __typename: "ModelTagConnection",
     items:  Array< {
       __typename: "Tag",
       id: string,
       name: string,
       createdAt: string,
       updatedAt: string,
+      profileTagsId?: string | null,
+      reportTagsId?: string | null,
     } | null >,
     nextToken?: string | null,
-    total?: number | null,
-    aggregateItems:  Array< {
-      __typename: "SearchableAggregateResult",
-      name: string,
-      result: ( {
-          __typename: "SearchableAggregateScalarResult",
-          value: number,
-        } | {
-          __typename: "SearchableAggregateBucketResult",
-          buckets?:  Array< {
-            __typename: string,
-            key: string,
-            doc_count: number,
-          } | null > | null,
-        }
-      ) | null,
-    } | null >,
   } | null,
 };
 
@@ -649,12 +544,13 @@ export type GetReportQuery = {
     dateTime: string,
     data: string,
     type?: ReportType | null,
-    reportTags?:  {
-      __typename: "ModelReportTagsConnection",
+    tags?:  {
+      __typename: "ModelTagConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
+    profileReportsId?: string | null,
   } | null,
 };
 
@@ -675,133 +571,26 @@ export type ListReportsQuery = {
       type?: ReportType | null,
       createdAt: string,
       updatedAt: string,
+      profileReportsId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
 };
 
-export type GetTagQueryVariables = {
-  id: string,
+export type OnCreateProfileSubscriptionVariables = {
+  filter?: ModelSubscriptionProfileFilterInput | null,
 };
 
-export type GetTagQuery = {
-  getTag?:  {
-    __typename: "Tag",
+export type OnCreateProfileSubscription = {
+  onCreateProfile?:  {
+    __typename: "Profile",
     id: string,
-    name: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type ListTagsQueryVariables = {
-  filter?: ModelTagFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListTagsQuery = {
-  listTags?:  {
-    __typename: "ModelTagConnection",
-    items:  Array< {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type GetReportTagsQueryVariables = {
-  id: string,
-};
-
-export type GetReportTagsQuery = {
-  getReportTags?:  {
-    __typename: "ReportTags",
-    id: string,
-    reportID: string,
-    tagID: string,
-    report?:  {
-      __typename: "Report",
-      id: string,
-      dateTime: string,
-      data: string,
-      type?: ReportType | null,
-      createdAt: string,
-      updatedAt: string,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
     } | null,
-    tag?:  {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type ListReportTagsQueryVariables = {
-  filter?: ModelReportTagsFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListReportTagsQuery = {
-  listReportTags?:  {
-    __typename: "ModelReportTagsConnection",
-    items:  Array< {
-      __typename: "ReportTags",
-      id: string,
-      reportID: string,
-      tagID: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type ReportTagsByReportIDQueryVariables = {
-  reportID: string,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelReportTagsFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ReportTagsByReportIDQuery = {
-  reportTagsByReportID?:  {
-    __typename: "ModelReportTagsConnection",
-    items:  Array< {
-      __typename: "ReportTags",
-      id: string,
-      reportID: string,
-      tagID: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type OnCreateReportSubscriptionVariables = {
-  filter?: ModelSubscriptionReportFilterInput | null,
-};
-
-export type OnCreateReportSubscription = {
-  onCreateReport?:  {
-    __typename: "Report",
-    id: string,
-    dateTime: string,
-    data: string,
-    type?: ReportType | null,
-    reportTags?:  {
-      __typename: "ModelReportTagsConnection",
+    reports?:  {
+      __typename: "ModelReportConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -809,19 +598,20 @@ export type OnCreateReportSubscription = {
   } | null,
 };
 
-export type OnUpdateReportSubscriptionVariables = {
-  filter?: ModelSubscriptionReportFilterInput | null,
+export type OnUpdateProfileSubscriptionVariables = {
+  filter?: ModelSubscriptionProfileFilterInput | null,
 };
 
-export type OnUpdateReportSubscription = {
-  onUpdateReport?:  {
-    __typename: "Report",
+export type OnUpdateProfileSubscription = {
+  onUpdateProfile?:  {
+    __typename: "Profile",
     id: string,
-    dateTime: string,
-    data: string,
-    type?: ReportType | null,
-    reportTags?:  {
-      __typename: "ModelReportTagsConnection",
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    reports?:  {
+      __typename: "ModelReportConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -829,19 +619,20 @@ export type OnUpdateReportSubscription = {
   } | null,
 };
 
-export type OnDeleteReportSubscriptionVariables = {
-  filter?: ModelSubscriptionReportFilterInput | null,
+export type OnDeleteProfileSubscriptionVariables = {
+  filter?: ModelSubscriptionProfileFilterInput | null,
 };
 
-export type OnDeleteReportSubscription = {
-  onDeleteReport?:  {
-    __typename: "Report",
+export type OnDeleteProfileSubscription = {
+  onDeleteProfile?:  {
+    __typename: "Profile",
     id: string,
-    dateTime: string,
-    data: string,
-    type?: ReportType | null,
-    reportTags?:  {
-      __typename: "ModelReportTagsConnection",
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
+    } | null,
+    reports?:  {
+      __typename: "ModelReportConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -860,6 +651,8 @@ export type OnCreateTagSubscription = {
     name: string,
     createdAt: string,
     updatedAt: string,
+    profileTagsId?: string | null,
+    reportTagsId?: string | null,
   } | null,
 };
 
@@ -874,6 +667,8 @@ export type OnUpdateTagSubscription = {
     name: string,
     createdAt: string,
     updatedAt: string,
+    profileTagsId?: string | null,
+    reportTagsId?: string | null,
   } | null,
 };
 
@@ -888,98 +683,70 @@ export type OnDeleteTagSubscription = {
     name: string,
     createdAt: string,
     updatedAt: string,
+    profileTagsId?: string | null,
+    reportTagsId?: string | null,
   } | null,
 };
 
-export type OnCreateReportTagsSubscriptionVariables = {
-  filter?: ModelSubscriptionReportTagsFilterInput | null,
+export type OnCreateReportSubscriptionVariables = {
+  filter?: ModelSubscriptionReportFilterInput | null,
 };
 
-export type OnCreateReportTagsSubscription = {
-  onCreateReportTags?:  {
-    __typename: "ReportTags",
+export type OnCreateReportSubscription = {
+  onCreateReport?:  {
+    __typename: "Report",
     id: string,
-    reportID: string,
-    tagID: string,
-    report?:  {
-      __typename: "Report",
-      id: string,
-      dateTime: string,
-      data: string,
-      type?: ReportType | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    tag?:  {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
+    dateTime: string,
+    data: string,
+    type?: ReportType | null,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
+    profileReportsId?: string | null,
   } | null,
 };
 
-export type OnUpdateReportTagsSubscriptionVariables = {
-  filter?: ModelSubscriptionReportTagsFilterInput | null,
+export type OnUpdateReportSubscriptionVariables = {
+  filter?: ModelSubscriptionReportFilterInput | null,
 };
 
-export type OnUpdateReportTagsSubscription = {
-  onUpdateReportTags?:  {
-    __typename: "ReportTags",
+export type OnUpdateReportSubscription = {
+  onUpdateReport?:  {
+    __typename: "Report",
     id: string,
-    reportID: string,
-    tagID: string,
-    report?:  {
-      __typename: "Report",
-      id: string,
-      dateTime: string,
-      data: string,
-      type?: ReportType | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    tag?:  {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
+    dateTime: string,
+    data: string,
+    type?: ReportType | null,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
+    profileReportsId?: string | null,
   } | null,
 };
 
-export type OnDeleteReportTagsSubscriptionVariables = {
-  filter?: ModelSubscriptionReportTagsFilterInput | null,
+export type OnDeleteReportSubscriptionVariables = {
+  filter?: ModelSubscriptionReportFilterInput | null,
 };
 
-export type OnDeleteReportTagsSubscription = {
-  onDeleteReportTags?:  {
-    __typename: "ReportTags",
+export type OnDeleteReportSubscription = {
+  onDeleteReport?:  {
+    __typename: "Report",
     id: string,
-    reportID: string,
-    tagID: string,
-    report?:  {
-      __typename: "Report",
-      id: string,
-      dateTime: string,
-      data: string,
-      type?: ReportType | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
-    tag?:  {
-      __typename: "Tag",
-      id: string,
-      name: string,
-      createdAt: string,
-      updatedAt: string,
+    dateTime: string,
+    data: string,
+    type?: ReportType | null,
+    tags?:  {
+      __typename: "ModelTagConnection",
+      nextToken?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
+    profileReportsId?: string | null,
   } | null,
 };

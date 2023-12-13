@@ -16,7 +16,7 @@ const DateField = ({ label, dateValue, timeValue, setDateValue, setTimeValue }: 
           }}
         >
           <DateTimePicker
-            value={dateValue ? new Date(dateValue) : new Date()}
+            value={dateValue}
             style={{ fontWeight: "400", fontSize: 20 }}
             onChange={(currentValue) => { setDateValue(currentValue); }}
             placeholder={"Select a date"}
@@ -35,7 +35,7 @@ const DateField = ({ label, dateValue, timeValue, setDateValue, setTimeValue }: 
           }}
         >
           <DateTimePicker
-            value={ timeValue ? new Date(timeValue) : new Date()}
+            value={ timeValue}
             style={{ fontWeight: "400", fontSize: 20 }}
             onChange={(currentValue) => { setTimeValue(currentValue); }}
             mode={"time"}

@@ -8,66 +8,87 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
-export const searchTags = /* GraphQL */ `query SearchTags(
-  $filter: SearchableTagFilterInput
-  $sort: [SearchableTagSortInput]
+export const getProfile = /* GraphQL */ `query GetProfile($id: ID!) {
+  getProfile(id: $id) {
+    id
+    tags {
+      nextToken
+      __typename
+    }
+    reports {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetProfileQueryVariables,
+  APITypes.GetProfileQuery
+>;
+export const listProfiles = /* GraphQL */ `query ListProfiles(
+  $filter: ModelProfileFilterInput
   $limit: Int
   $nextToken: String
-  $from: Int
-  $aggregates: [SearchableTagAggregationInput]
 ) {
-  searchTags(
-    filter: $filter
-    sort: $sort
-    limit: $limit
-    nextToken: $nextToken
-    from: $from
-    aggregates: $aggregates
-  ) {
+  listProfiles(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      name
       createdAt
       updatedAt
       __typename
     }
     nextToken
-    total
-    aggregateItems {
-      name
-      result {
-        ... on SearchableAggregateScalarResult {
-          value
-        }
-        ... on SearchableAggregateBucketResult {
-          buckets {
-            key
-            doc_count
-            __typename
-          }
-        }
-      }
-      __typename
-    }
     __typename
   }
 }
 ` as GeneratedQuery<
-  APITypes.SearchTagsQueryVariables,
-  APITypes.SearchTagsQuery
+  APITypes.ListProfilesQueryVariables,
+  APITypes.ListProfilesQuery
 >;
+export const getTag = /* GraphQL */ `query GetTag($id: ID!) {
+  getTag(id: $id) {
+    id
+    name
+    createdAt
+    updatedAt
+    profileTagsId
+    reportTagsId
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetTagQueryVariables, APITypes.GetTagQuery>;
+export const listTags = /* GraphQL */ `query ListTags($filter: ModelTagFilterInput, $limit: Int, $nextToken: String) {
+  listTags(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      name
+      createdAt
+      updatedAt
+      profileTagsId
+      reportTagsId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListTagsQueryVariables, APITypes.ListTagsQuery>;
 export const getReport = /* GraphQL */ `query GetReport($id: ID!) {
   getReport(id: $id) {
     id
     dateTime
     data
     type
-    reportTags {
+    tags {
       nextToken
       __typename
     }
     createdAt
     updatedAt
+    profileReportsId
     __typename
   }
 }
@@ -85,6 +106,7 @@ export const listReports = /* GraphQL */ `query ListReports(
       type
       createdAt
       updatedAt
+      profileReportsId
       __typename
     }
     nextToken
@@ -94,110 +116,4 @@ export const listReports = /* GraphQL */ `query ListReports(
 ` as GeneratedQuery<
   APITypes.ListReportsQueryVariables,
   APITypes.ListReportsQuery
->;
-export const getTag = /* GraphQL */ `query GetTag($id: ID!) {
-  getTag(id: $id) {
-    id
-    name
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.GetTagQueryVariables, APITypes.GetTagQuery>;
-export const listTags = /* GraphQL */ `query ListTags($filter: ModelTagFilterInput, $limit: Int, $nextToken: String) {
-  listTags(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      name
-      createdAt
-      updatedAt
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.ListTagsQueryVariables, APITypes.ListTagsQuery>;
-export const getReportTags = /* GraphQL */ `query GetReportTags($id: ID!) {
-  getReportTags(id: $id) {
-    id
-    reportID
-    tagID
-    report {
-      id
-      dateTime
-      data
-      type
-      createdAt
-      updatedAt
-      __typename
-    }
-    tag {
-      id
-      name
-      createdAt
-      updatedAt
-      __typename
-    }
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetReportTagsQueryVariables,
-  APITypes.GetReportTagsQuery
->;
-export const listReportTags = /* GraphQL */ `query ListReportTags(
-  $filter: ModelReportTagsFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listReportTags(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      reportID
-      tagID
-      createdAt
-      updatedAt
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ListReportTagsQueryVariables,
-  APITypes.ListReportTagsQuery
->;
-export const reportTagsByReportID = /* GraphQL */ `query ReportTagsByReportID(
-  $reportID: ID!
-  $sortDirection: ModelSortDirection
-  $filter: ModelReportTagsFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  reportTagsByReportID(
-    reportID: $reportID
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      reportID
-      tagID
-      createdAt
-      updatedAt
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ReportTagsByReportIDQueryVariables,
-  APITypes.ReportTagsByReportIDQuery
 >;

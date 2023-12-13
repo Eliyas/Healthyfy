@@ -6,24 +6,21 @@ enum ReportType {
   POO
 }
 
+type Profile @model {
+  id: ID!
+  tags: [Tag] @hasMany
+  reports: [Report] @hasMany
+}
+
+type Tag @model {
+  id: ID!
+  name: String!
+}
+
 type Report @model {
   id: ID!
   dateTime: AWSDateTime!
   data: AWSJSON!
   type: ReportType
-  reportTags: [ReportTags] @hasMany(indexName: "byReport", fields: ["id"])
-}
-
-type Tag @model @searchable {
-  id: ID!
-  name: String!
-}
-
-type ReportTags @model {
-  id: ID!
-  reportID: ID! @index(name: "byReport")
-  tagID: ID!
-  report: Report @belongsTo(fields: ["reportID"])
-  tag: Tag @hasOne(fields: ["tagID"])
-
+  tags: [Tag] @hasMany
 }

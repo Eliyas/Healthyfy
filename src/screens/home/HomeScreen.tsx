@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, TouchableOpacity, Image, processColor } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -6,6 +6,12 @@ import { AntDesign } from "@expo/vector-icons";
 import { Button, Card, Text, View } from "react-native-ui-lib";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { LineChart } from 'react-native-charts-wrapper';
+import DeviceInfo from 'react-native-device-info';
+import { GraphQLQuery } from '@aws-amplify/api';
+import { API } from 'aws-amplify';
+import * as query from "../../graphql/queries";
+import { CreateProfileInput, CreateProfileMutationVariables, GetProfileQueryVariables } from "../../API";
+import { createProfile } from "../../graphql/mutations";
 
 const DATA = [
   {
@@ -22,6 +28,36 @@ const DATA = [
 
 export default function HomeScreen() {
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const deviceId = await DeviceInfo.getUniqueId();
+      const profile: any = await API.graphql<GraphQLQuery<GetProfileQueryVariables>>(
+        {
+          query: query.getProfile,
+          variables: { id: deviceId }
+        });
+      console.log("profile ", profile.getProfile);
+      console.log("deviceId ", deviceId);
+      if (!profile.getProfile) {
+        const input: CreateProfileMutationVariables = {
+          input: { id: deviceId }
+        }
+        const newProfile: any = await API.graphql<GraphQLQuery<CreateProfileInput>>(
+          {
+            query: createProfile,
+            variables: input
+          });
+        console.log("newProfile ", newProfile);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <Container style={{ backgroundColor: "#E6DBD9" }}>
