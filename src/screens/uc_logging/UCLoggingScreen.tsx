@@ -16,7 +16,7 @@ import {
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
 import {
-  CreateReportInput, CreateReportMutation, GetProfileQueryVariables, ListTagsQueryVariables, ModelTagFilterInput, ReportType
+  CreateReportInput, CreateReportMutation, CreateTagMutationVariables, GetProfileQueryVariables, ListTagsQueryVariables, ModelTagFilterInput, ReportType
 } from "../../API";
 import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
@@ -175,7 +175,10 @@ export default function UCLoggingScreen() {
     try {
       console.log("DeviceId ", deviceId);
       const input: ListTagsQueryVariables = {
-        filter: { profileTagsId: { eq: deviceId } }
+        filter: {
+          profileTagsDeviceId: { eq: deviceId },
+          reportTagsId: { attributeExists: false }
+        }
       }
       const response: any = await API.graphql<GraphQLQuery<ListTagsQueryVariables>>(
         {
@@ -220,7 +223,7 @@ export default function UCLoggingScreen() {
 
   const saveCurrentTag = async () => {
     if (!currentTagEdit.name) return;
-    const input: CreateTagInput = { name: currentTagEdit.name, profileTagsId: profileId };
+    const input: CreateTagInput = { name: currentTagEdit.name, profileTagsDeviceId: profileId };
     console.log("input ", input)
     setIsLoading(true);
     try {
@@ -310,6 +313,7 @@ export default function UCLoggingScreen() {
     const input: CreateReportInput = {
       type: ReportType.POO,
       dateTime: dateTimeIso,
+      profileReportsDeviceId: profileId,
       data: JSON.stringify({
         urgency: urgency,
         consistency: consistency,
@@ -322,9 +326,9 @@ export default function UCLoggingScreen() {
       })
     }
 
-    let reportTagsInput = [];
+    let reportTagsInput: CreateTagInput[] = [];
     _.each(tags, (tag) => {
-      if (tag.isChecked) reportTagsInput.push({ reportTagsId: "", name: tag.name })
+      if (tag.isChecked) reportTagsInput.push({ profileTagsDeviceId: tag.profileTagsDeviceId, reportTagsId: "", name: tag.name })
     });
 
     try {
@@ -332,10 +336,9 @@ export default function UCLoggingScreen() {
         {
           query: mutations.createReport, variables: { input }
         });
-      console.log("input", input);
+      console.log("reportInput", input);
       _.each(reportTagsInput, tag => {
         tag.reportTagsId = reportResponse.data.createReport.id;
-        tag.profileTagsId = profileId;
       });
 
       console.log(" reportTagsInput ", reportTagsInput)

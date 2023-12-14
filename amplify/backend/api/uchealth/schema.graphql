@@ -7,7 +7,7 @@ enum ReportType {
 }
 
 type Profile @model {
-  id: ID!
+  deviceId: ID! @primaryKey
   tags: [Tag] @hasMany
   reports: [Report] @hasMany
 }

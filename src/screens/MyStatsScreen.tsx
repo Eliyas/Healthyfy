@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, TouchableOpacity, Image, processColor } from "react-native";
+import { processColor } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-import { Button, Card, Checkbox, GridList, GridListItem, GridView, Picker, Spacings, Text, View } from "react-native-ui-lib";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { Button, Card, Checkbox, GridList, Picker, Spacings, Text, View } from "react-native-ui-lib";
+import { AntDesign } from "@expo/vector-icons";
 import { LineChart } from 'react-native-charts-wrapper';
-import { FieldLabelType } from "../constants";
+import { FieldLabelType, MetricType } from "../constants";
 import { GraphQLQuery } from "@aws-amplify/api";
 import { API } from 'aws-amplify';
 import * as query from "../graphql/queries";
-import { ListReportsQueryVariables, ListTagsQueryVariables, ModelReportFilterInput } from "../API";
+import { ListReportsQueryVariables, ModelReportFilterInput } from "../API";
 import _ from "lodash";
 import DeviceInfo from 'react-native-device-info';
+import { Dropdown } from 'react-native-element-dropdown';
+import moment from "moment";
 
 const MyStatsScreen = () => {
     const [metrics, setMetrics] = useState([
@@ -45,8 +47,21 @@ const MyStatsScreen = () => {
             }
         ]
     });
-    const [duration, setDuration] = useState("30 Days");
-    const [durationOptions, setDurationOptions] = useState(["30 Days", "90 Days", "60 Days"]);
+    const [duration, setDuration] = useState("30");
+
+    const durationOptions = [
+        { label: "30 Days", value: "30" },
+        { label: "60 Days", value: "60" },
+        { label: "90 Days", value: "90" }
+    ];
+    const metricKeyAndValueMap = {
+        [MetricType.NONE]: 0,
+        [MetricType.LOW]: 1,
+        [MetricType.MODERATE]: 2,
+        [MetricType.HIGH]: 3,
+        [MetricType.VERY_HIGH]: 4,
+        [MetricType.EMERGENCY]: 5
+    }
 
     useEffect(() => {
         DeviceInfo.getUniqueId().then((id) => fetchReports(id));
@@ -54,46 +69,45 @@ const MyStatsScreen = () => {
 
     const fetchReports = async (deviceId: string) => {
         try {
+            console.log("deviceId ", deviceId)
             const reportsInput: ListReportsQueryVariables = {
-                filter: {}
+                filter: { profileReportsDeviceId: { eq: deviceId } }
             }
             const response: any = await API.graphql<GraphQLQuery<ModelReportFilterInput>>(
                 {
                     query: query.listReports,
-                    variables: {}
+                    variables: { reportsInput }
                 })
             console.log("Success")
-            console.log("reports ", response.data.listReports.items)
-            const input: ListTagsQueryVariables = {
-                filter: {
-                    profileTagsId: { eq: deviceId },
-                    reportTagsId: {
-                        between: _.map(response.data.listReports.items, "id") as string[]
-                    }
-                }
-            }
-            const response1: any = await API.graphql<GraphQLQuery<string>>(
-                {
-                    query: query.getReport,
-                    variables: input
-                })
-            const tagIdInfoMap = {};
-            console.log("response1 ", response1);
-            // _.each(tags, tag => {
-            //     tagIdInfoMap[tag.id] = tag;
-            // });
-            // _.each(response.data.listTags.items, tag => {
-            //     if (tagIdInfoMap[tag.id]) {
-            //         tag.isChecked = tagIdInfoMap[tag.id].isChecked;
-            //     }
-            // });
-            // setTags(_.sortBy(response.data.listTags.items, "createdAt"));
-            // fuse = new Fuse(response.data.listTags.items, { includeScore: true, keys: ['name'] });
+            console.log("reports ", response.data.listReports);
         } catch (err) {
             console.error("Failed to fetch tags");
             console.error(err);
         }
     }
+
+    // const buildChartData = (data) => {
+    //     const selectedField = _.filter(metrics, "isChecked");
+    //     console.log("Cheked ", selectedField);
+    //     const fieldNameKeyAndDateKeyAndValueMap = {}
+    //     _.each(selectedField, (field, index) => {
+    //         let metrics;
+    //         try {
+    //             metrics = JSON.parse(data[index].data);
+    //         } catch (error) { }
+    //         console.log("Metrics ", metrics);
+    //         if (metrics[field.name]) {
+    //             const date = moment(data[index].createdAt).get("date");
+
+    //         }
+
+
+    //     });
+
+
+    // };
+
+    // buildChartData([{ "__typename": "Report", "createdAt": "2023-12-14T19:00:42.234Z", "data": "{\"volume\":\"Emergency!\",\"pain\":\"\",\"spray\":\"Moderate\",\"urgency\":\"High\",\"gas\":\"\",\"consistency\":\"Very High\",\"blood\":\"Moderate\",\"nausea\":\"\"}", "dateTime": "2023-12-14T18:58:30.168Z", "id": "cf729eb6-e018-4db0-9292-e912fdaec581", "profileReportsDeviceId": "b010e056640b2a0d", "type": "POO", "updatedAt": "2023-12-14T19:00:42.234Z" }, { "__typename": "Report", "createdAt": "2023-12-14T19:01:59.943Z", "data": "{\"volume\":\"Very High\",\"pain\":\"\",\"spray\":\"Low\",\"urgency\":\"Moderate\",\"gas\":\"Moderate\",\"consistency\":\"High\",\"blood\":\"Low\",\"nausea\":\"\"}", "dateTime": "2023-12-14T19:01:19.693Z", "id": "36c592e4-e575-4639-817d-67da66822883", "profileReportsDeviceId": "b010e056640b2a0d", "type": "POO", "updatedAt": "2023-12-14T19:01:59.943Z" }])
 
     const handleTagChange = (tag) => {
         tag.isChecked = !tag.isChecked;
@@ -125,27 +139,13 @@ const MyStatsScreen = () => {
             >
                 <View width={"100%"} style={{ marginHorizontal: 10 }}>
                     <Text text70 style={{ color: "#514D4A", fontWeight: "400", fontSize: 20, marginBottom: 20 }}>My Stats</Text>
-                </View>
-
-                <View width={"100%"} style={{ marginHorizontal: 10 }}>
-                    <Picker
-                        label="Wheel Picker"
-                        placeholder="Pick a Language"
-                        useWheelPicker
+                    <Dropdown
+                        data={durationOptions}
                         value={duration}
-                        onChange={(nativePickerValue: string) => setDuration(nativePickerValue)}
-                        trailingAccessory={<AntDesign
-                            name="downsquare"
-                            size={21}
-                            style={{ marginLeft: 10 }}
-                            color="black"
-                        />}
-                    >
-                        {durationOptions.map(option => (
-                            <Picker.Item key={option} value={option} label={option} />
-                        ))}
-                    </Picker>
-
+                        labelField={"label"}
+                        valueField={"value"}
+                        onChange={item => setDuration(item.value)}
+                    />
                 </View>
 
                 <View width={"100%"} style={{ marginBottom: 20, height: 200 }}>

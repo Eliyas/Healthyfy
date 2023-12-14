@@ -16,3 +16,13 @@ export const FieldLabelType = {
     Tag: "Tags",
     Submit: "Submit",
 }
+
+
+export const MetricType = {
+    NONE: "None",
+    LOW: "Low",
+    MODERATE: "Moderate",
+    HIGH: "High",
+    VERY_HIGH: "Very High",
+    EMERGENCY: "Emergency!"
+}

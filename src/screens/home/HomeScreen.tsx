@@ -39,13 +39,13 @@ export default function HomeScreen() {
       const profile: any = await API.graphql<GraphQLQuery<GetProfileQueryVariables>>(
         {
           query: query.getProfile,
-          variables: { id: deviceId }
+          variables: { deviceId }
         });
-      console.log("profile ", profile.getProfile);
+      console.log("profile ", profile.data.getProfile);
       console.log("deviceId ", deviceId);
-      if (!profile.getProfile) {
+      if (!profile.data.getProfile) {
         const input: CreateProfileMutationVariables = {
-          input: { id: deviceId }
+          input: { deviceId: deviceId }
         }
         const newProfile: any = await API.graphql<GraphQLQuery<CreateProfileInput>>(
           {

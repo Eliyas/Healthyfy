@@ -3,7 +3,7 @@
 //  This file was automatically generated and should not be edited.
 
 export type CreateProfileInput = {
-  id?: string | null,
+  deviceId: string,
 };
 
 export type ModelProfileConditionInput = {
@@ -14,7 +14,7 @@ export type ModelProfileConditionInput = {
 
 export type Profile = {
   __typename: "Profile",
-  id: string,
+  deviceId: string,
   tags?: ModelTagConnection | null,
   reports?: ModelReportConnection | null,
   createdAt: string,
@@ -33,7 +33,7 @@ export type Tag = {
   name: string,
   createdAt: string,
   updatedAt: string,
-  profileTagsId?: string | null,
+  profileTagsDeviceId?: string | null,
   reportTagsId?: string | null,
 };
 
@@ -52,7 +52,7 @@ export type Report = {
   tags?: ModelTagConnection | null,
   createdAt: string,
   updatedAt: string,
-  profileReportsId?: string | null,
+  profileReportsDeviceId?: string | null,
 };
 
 export enum ReportType {
@@ -61,17 +61,17 @@ export enum ReportType {
 
 
 export type UpdateProfileInput = {
-  id: string,
+  deviceId: string,
 };
 
 export type DeleteProfileInput = {
-  id: string,
+  deviceId: string,
 };
 
 export type CreateTagInput = {
   id?: string | null,
   name: string,
-  profileTagsId?: string | null,
+  profileTagsDeviceId?: string | null,
   reportTagsId?: string | null,
 };
 
@@ -80,7 +80,7 @@ export type ModelTagConditionInput = {
   and?: Array< ModelTagConditionInput | null > | null,
   or?: Array< ModelTagConditionInput | null > | null,
   not?: ModelTagConditionInput | null,
-  profileTagsId?: ModelIDInput | null,
+  profileTagsDeviceId?: ModelIDInput | null,
   reportTagsId?: ModelIDInput | null,
 };
 
@@ -143,7 +143,7 @@ export type ModelIDInput = {
 export type UpdateTagInput = {
   id: string,
   name?: string | null,
-  profileTagsId?: string | null,
+  profileTagsDeviceId?: string | null,
   reportTagsId?: string | null,
 };
 
@@ -156,7 +156,7 @@ export type CreateReportInput = {
   dateTime: string,
   data: string,
   type?: ReportType | null,
-  profileReportsId?: string | null,
+  profileReportsDeviceId?: string | null,
 };
 
 export type ModelReportConditionInput = {
@@ -166,7 +166,7 @@ export type ModelReportConditionInput = {
   and?: Array< ModelReportConditionInput | null > | null,
   or?: Array< ModelReportConditionInput | null > | null,
   not?: ModelReportConditionInput | null,
-  profileReportsId?: ModelIDInput | null,
+  profileReportsDeviceId?: ModelIDInput | null,
 };
 
 export type ModelReportTypeInput = {
@@ -179,7 +179,7 @@ export type UpdateReportInput = {
   dateTime?: string | null,
   data?: string | null,
   type?: ReportType | null,
-  profileReportsId?: string | null,
+  profileReportsDeviceId?: string | null,
 };
 
 export type DeleteReportInput = {
@@ -187,11 +187,17 @@ export type DeleteReportInput = {
 };
 
 export type ModelProfileFilterInput = {
-  id?: ModelIDInput | null,
+  deviceId?: ModelIDInput | null,
   and?: Array< ModelProfileFilterInput | null > | null,
   or?: Array< ModelProfileFilterInput | null > | null,
   not?: ModelProfileFilterInput | null,
 };
+
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
 
 export type ModelProfileConnection = {
   __typename: "ModelProfileConnection",
@@ -205,7 +211,7 @@ export type ModelTagFilterInput = {
   and?: Array< ModelTagFilterInput | null > | null,
   or?: Array< ModelTagFilterInput | null > | null,
   not?: ModelTagFilterInput | null,
-  profileTagsId?: ModelIDInput | null,
+  profileTagsDeviceId?: ModelIDInput | null,
   reportTagsId?: ModelIDInput | null,
 };
 
@@ -217,11 +223,11 @@ export type ModelReportFilterInput = {
   and?: Array< ModelReportFilterInput | null > | null,
   or?: Array< ModelReportFilterInput | null > | null,
   not?: ModelReportFilterInput | null,
-  profileReportsId?: ModelIDInput | null,
+  profileReportsDeviceId?: ModelIDInput | null,
 };
 
 export type ModelSubscriptionProfileFilterInput = {
-  id?: ModelSubscriptionIDInput | null,
+  deviceId?: ModelSubscriptionIDInput | null,
   and?: Array< ModelSubscriptionProfileFilterInput | null > | null,
   or?: Array< ModelSubscriptionProfileFilterInput | null > | null,
 };
@@ -280,7 +286,7 @@ export type CreateProfileMutationVariables = {
 export type CreateProfileMutation = {
   createProfile?:  {
     __typename: "Profile",
-    id: string,
+    deviceId: string,
     tags?:  {
       __typename: "ModelTagConnection",
       nextToken?: string | null,
@@ -302,7 +308,7 @@ export type UpdateProfileMutationVariables = {
 export type UpdateProfileMutation = {
   updateProfile?:  {
     __typename: "Profile",
-    id: string,
+    deviceId: string,
     tags?:  {
       __typename: "ModelTagConnection",
       nextToken?: string | null,
@@ -324,7 +330,7 @@ export type DeleteProfileMutationVariables = {
 export type DeleteProfileMutation = {
   deleteProfile?:  {
     __typename: "Profile",
-    id: string,
+    deviceId: string,
     tags?:  {
       __typename: "ModelTagConnection",
       nextToken?: string | null,
@@ -350,7 +356,7 @@ export type CreateTagMutation = {
     name: string,
     createdAt: string,
     updatedAt: string,
-    profileTagsId?: string | null,
+    profileTagsDeviceId?: string | null,
     reportTagsId?: string | null,
   } | null,
 };
@@ -367,7 +373,7 @@ export type UpdateTagMutation = {
     name: string,
     createdAt: string,
     updatedAt: string,
-    profileTagsId?: string | null,
+    profileTagsDeviceId?: string | null,
     reportTagsId?: string | null,
   } | null,
 };
@@ -384,7 +390,7 @@ export type DeleteTagMutation = {
     name: string,
     createdAt: string,
     updatedAt: string,
-    profileTagsId?: string | null,
+    profileTagsDeviceId?: string | null,
     reportTagsId?: string | null,
   } | null,
 };
@@ -407,7 +413,7 @@ export type CreateReportMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    profileReportsId?: string | null,
+    profileReportsDeviceId?: string | null,
   } | null,
 };
 
@@ -429,7 +435,7 @@ export type UpdateReportMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    profileReportsId?: string | null,
+    profileReportsDeviceId?: string | null,
   } | null,
 };
 
@@ -451,18 +457,18 @@ export type DeleteReportMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    profileReportsId?: string | null,
+    profileReportsDeviceId?: string | null,
   } | null,
 };
 
 export type GetProfileQueryVariables = {
-  id: string,
+  deviceId: string,
 };
 
 export type GetProfileQuery = {
   getProfile?:  {
     __typename: "Profile",
-    id: string,
+    deviceId: string,
     tags?:  {
       __typename: "ModelTagConnection",
       nextToken?: string | null,
@@ -477,9 +483,11 @@ export type GetProfileQuery = {
 };
 
 export type ListProfilesQueryVariables = {
+  deviceId?: string | null,
   filter?: ModelProfileFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
+  sortDirection?: ModelSortDirection | null,
 };
 
 export type ListProfilesQuery = {
@@ -487,7 +495,7 @@ export type ListProfilesQuery = {
     __typename: "ModelProfileConnection",
     items:  Array< {
       __typename: "Profile",
-      id: string,
+      deviceId: string,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -506,7 +514,7 @@ export type GetTagQuery = {
     name: string,
     createdAt: string,
     updatedAt: string,
-    profileTagsId?: string | null,
+    profileTagsDeviceId?: string | null,
     reportTagsId?: string | null,
   } | null,
 };
@@ -526,7 +534,7 @@ export type ListTagsQuery = {
       name: string,
       createdAt: string,
       updatedAt: string,
-      profileTagsId?: string | null,
+      profileTagsDeviceId?: string | null,
       reportTagsId?: string | null,
     } | null >,
     nextToken?: string | null,
@@ -550,7 +558,7 @@ export type GetReportQuery = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    profileReportsId?: string | null,
+    profileReportsDeviceId?: string | null,
   } | null,
 };
 
@@ -571,7 +579,7 @@ export type ListReportsQuery = {
       type?: ReportType | null,
       createdAt: string,
       updatedAt: string,
-      profileReportsId?: string | null,
+      profileReportsDeviceId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -584,7 +592,7 @@ export type OnCreateProfileSubscriptionVariables = {
 export type OnCreateProfileSubscription = {
   onCreateProfile?:  {
     __typename: "Profile",
-    id: string,
+    deviceId: string,
     tags?:  {
       __typename: "ModelTagConnection",
       nextToken?: string | null,
@@ -605,7 +613,7 @@ export type OnUpdateProfileSubscriptionVariables = {
 export type OnUpdateProfileSubscription = {
   onUpdateProfile?:  {
     __typename: "Profile",
-    id: string,
+    deviceId: string,
     tags?:  {
       __typename: "ModelTagConnection",
       nextToken?: string | null,
@@ -626,7 +634,7 @@ export type OnDeleteProfileSubscriptionVariables = {
 export type OnDeleteProfileSubscription = {
   onDeleteProfile?:  {
     __typename: "Profile",
-    id: string,
+    deviceId: string,
     tags?:  {
       __typename: "ModelTagConnection",
       nextToken?: string | null,
@@ -651,7 +659,7 @@ export type OnCreateTagSubscription = {
     name: string,
     createdAt: string,
     updatedAt: string,
-    profileTagsId?: string | null,
+    profileTagsDeviceId?: string | null,
     reportTagsId?: string | null,
   } | null,
 };
@@ -667,7 +675,7 @@ export type OnUpdateTagSubscription = {
     name: string,
     createdAt: string,
     updatedAt: string,
-    profileTagsId?: string | null,
+    profileTagsDeviceId?: string | null,
     reportTagsId?: string | null,
   } | null,
 };
@@ -683,7 +691,7 @@ export type OnDeleteTagSubscription = {
     name: string,
     createdAt: string,
     updatedAt: string,
-    profileTagsId?: string | null,
+    profileTagsDeviceId?: string | null,
     reportTagsId?: string | null,
   } | null,
 };
@@ -705,7 +713,7 @@ export type OnCreateReportSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    profileReportsId?: string | null,
+    profileReportsDeviceId?: string | null,
   } | null,
 };
 
@@ -726,7 +734,7 @@ export type OnUpdateReportSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    profileReportsId?: string | null,
+    profileReportsDeviceId?: string | null,
   } | null,
 };
 
@@ -747,6 +755,6 @@ export type OnDeleteReportSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    profileReportsId?: string | null,
+    profileReportsDeviceId?: string | null,
   } | null,
 };

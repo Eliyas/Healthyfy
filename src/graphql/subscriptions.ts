@@ -10,7 +10,7 @@ type GeneratedSubscription<InputType, OutputType> = string & {
 
 export const onCreateProfile = /* GraphQL */ `subscription OnCreateProfile($filter: ModelSubscriptionProfileFilterInput) {
   onCreateProfile(filter: $filter) {
-    id
+    deviceId
     tags {
       nextToken
       __typename
@@ -30,7 +30,7 @@ export const onCreateProfile = /* GraphQL */ `subscription OnCreateProfile($filt
 >;
 export const onUpdateProfile = /* GraphQL */ `subscription OnUpdateProfile($filter: ModelSubscriptionProfileFilterInput) {
   onUpdateProfile(filter: $filter) {
-    id
+    deviceId
     tags {
       nextToken
       __typename
@@ -50,7 +50,7 @@ export const onUpdateProfile = /* GraphQL */ `subscription OnUpdateProfile($filt
 >;
 export const onDeleteProfile = /* GraphQL */ `subscription OnDeleteProfile($filter: ModelSubscriptionProfileFilterInput) {
   onDeleteProfile(filter: $filter) {
-    id
+    deviceId
     tags {
       nextToken
       __typename
@@ -74,7 +74,7 @@ export const onCreateTag = /* GraphQL */ `subscription OnCreateTag($filter: Mode
     name
     createdAt
     updatedAt
-    profileTagsId
+    profileTagsDeviceId
     reportTagsId
     __typename
   }
@@ -89,7 +89,7 @@ export const onUpdateTag = /* GraphQL */ `subscription OnUpdateTag($filter: Mode
     name
     createdAt
     updatedAt
-    profileTagsId
+    profileTagsDeviceId
     reportTagsId
     __typename
   }
@@ -104,7 +104,7 @@ export const onDeleteTag = /* GraphQL */ `subscription OnDeleteTag($filter: Mode
     name
     createdAt
     updatedAt
-    profileTagsId
+    profileTagsDeviceId
     reportTagsId
     __typename
   }
@@ -125,7 +125,7 @@ export const onCreateReport = /* GraphQL */ `subscription OnCreateReport($filter
     }
     createdAt
     updatedAt
-    profileReportsId
+    profileReportsDeviceId
     __typename
   }
 }
@@ -145,7 +145,7 @@ export const onUpdateReport = /* GraphQL */ `subscription OnUpdateReport($filter
     }
     createdAt
     updatedAt
-    profileReportsId
+    profileReportsDeviceId
     __typename
   }
 }
@@ -165,7 +165,7 @@ export const onDeleteReport = /* GraphQL */ `subscription OnDeleteReport($filter
     }
     createdAt
     updatedAt
-    profileReportsId
+    profileReportsDeviceId
     __typename
   }
 }

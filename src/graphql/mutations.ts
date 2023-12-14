@@ -13,7 +13,7 @@ export const createProfile = /* GraphQL */ `mutation CreateProfile(
   $condition: ModelProfileConditionInput
 ) {
   createProfile(input: $input, condition: $condition) {
-    id
+    deviceId
     tags {
       nextToken
       __typename
@@ -36,7 +36,7 @@ export const updateProfile = /* GraphQL */ `mutation UpdateProfile(
   $condition: ModelProfileConditionInput
 ) {
   updateProfile(input: $input, condition: $condition) {
-    id
+    deviceId
     tags {
       nextToken
       __typename
@@ -59,7 +59,7 @@ export const deleteProfile = /* GraphQL */ `mutation DeleteProfile(
   $condition: ModelProfileConditionInput
 ) {
   deleteProfile(input: $input, condition: $condition) {
-    id
+    deviceId
     tags {
       nextToken
       __typename
@@ -86,7 +86,7 @@ export const createTag = /* GraphQL */ `mutation CreateTag(
     name
     createdAt
     updatedAt
-    profileTagsId
+    profileTagsDeviceId
     reportTagsId
     __typename
   }
@@ -104,7 +104,7 @@ export const updateTag = /* GraphQL */ `mutation UpdateTag(
     name
     createdAt
     updatedAt
-    profileTagsId
+    profileTagsDeviceId
     reportTagsId
     __typename
   }
@@ -122,7 +122,7 @@ export const deleteTag = /* GraphQL */ `mutation DeleteTag(
     name
     createdAt
     updatedAt
-    profileTagsId
+    profileTagsDeviceId
     reportTagsId
     __typename
   }
@@ -146,7 +146,7 @@ export const createReport = /* GraphQL */ `mutation CreateReport(
     }
     createdAt
     updatedAt
-    profileReportsId
+    profileReportsDeviceId
     __typename
   }
 }
@@ -169,7 +169,7 @@ export const updateReport = /* GraphQL */ `mutation UpdateReport(
     }
     createdAt
     updatedAt
-    profileReportsId
+    profileReportsDeviceId
     __typename
   }
 }
@@ -192,7 +192,7 @@ export const deleteReport = /* GraphQL */ `mutation DeleteReport(
     }
     createdAt
     updatedAt
-    profileReportsId
+    profileReportsDeviceId
     __typename
   }
 }

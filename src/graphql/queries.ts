@@ -8,9 +8,9 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
-export const getProfile = /* GraphQL */ `query GetProfile($id: ID!) {
-  getProfile(id: $id) {
-    id
+export const getProfile = /* GraphQL */ `query GetProfile($deviceId: ID!) {
+  getProfile(deviceId: $deviceId) {
+    deviceId
     tags {
       nextToken
       __typename
@@ -29,13 +29,21 @@ export const getProfile = /* GraphQL */ `query GetProfile($id: ID!) {
   APITypes.GetProfileQuery
 >;
 export const listProfiles = /* GraphQL */ `query ListProfiles(
+  $deviceId: ID
   $filter: ModelProfileFilterInput
   $limit: Int
   $nextToken: String
+  $sortDirection: ModelSortDirection
 ) {
-  listProfiles(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listProfiles(
+    deviceId: $deviceId
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
     items {
-      id
+      deviceId
       createdAt
       updatedAt
       __typename
@@ -54,7 +62,7 @@ export const getTag = /* GraphQL */ `query GetTag($id: ID!) {
     name
     createdAt
     updatedAt
-    profileTagsId
+    profileTagsDeviceId
     reportTagsId
     __typename
   }
@@ -67,7 +75,7 @@ export const listTags = /* GraphQL */ `query ListTags($filter: ModelTagFilterInp
       name
       createdAt
       updatedAt
-      profileTagsId
+      profileTagsDeviceId
       reportTagsId
       __typename
     }
@@ -88,7 +96,7 @@ export const getReport = /* GraphQL */ `query GetReport($id: ID!) {
     }
     createdAt
     updatedAt
-    profileReportsId
+    profileReportsDeviceId
     __typename
   }
 }
@@ -106,7 +114,7 @@ export const listReports = /* GraphQL */ `query ListReports(
       type
       createdAt
       updatedAt
-      profileReportsId
+      profileReportsDeviceId
       __typename
     }
     nextToken
