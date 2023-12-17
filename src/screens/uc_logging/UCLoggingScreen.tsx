@@ -315,14 +315,14 @@ export default function UCLoggingScreen() {
       dateTime: dateTimeIso,
       profileReportsDeviceId: profileId,
       data: JSON.stringify({
-        urgency: urgency,
-        consistency: consistency,
-        spray: spray,
-        volume: volume,
-        blood: blood,
-        gas: gas,
-        pain: pain,
-        nausea: nausea
+        [FieldLabelType.Urgency]: urgency,
+        [FieldLabelType.Consistency]: consistency,
+        [FieldLabelType.Spray]: spray,
+        [FieldLabelType.Volume]: volume,
+        [FieldLabelType.Blood]: blood,
+        [FieldLabelType.Gas]: gas,
+        [FieldLabelType.Pain]: pain,
+        [FieldLabelType.Nausea]: nausea
       })
     }
 

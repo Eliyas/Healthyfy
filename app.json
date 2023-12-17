@@ -8,14 +8,15 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/spash-logo.png",
-      "resizeMode": "native",
+      "resizeMode": "contain",
       "backgroundColor": "#E6DBD9"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.DSWebSolutionsInc.MyUCHealing"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,6 +27,11 @@
     },
     "web": {
       "favicon": "./assets/daily-health-app-4.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "41732ebd-9354-46f0-817e-108de4e23808"
+      }
     }
   }
 }
