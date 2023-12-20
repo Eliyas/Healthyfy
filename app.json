@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/spash-logo.png",
-      "resizeMode": "contain",
+      "resizeMode": "native",
       "backgroundColor": "#E6DBD9"
     },
     "assetBundlePatterns": [
