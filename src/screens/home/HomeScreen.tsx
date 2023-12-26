@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, TouchableOpacity, Image, processColor, ImageBackground } from "react-native";
+import { FlatList, TouchableOpacity, Image, processColor, ImageBackground, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-import { AntDesign } from "@expo/vector-icons";
-import { Button, Card, Text, View } from "react-native-ui-lib";
+import { FontAwesome } from "@expo/vector-icons";
+import { Button, Card, Modal, Text, View } from "react-native-ui-lib";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { LineChart } from 'react-native-charts-wrapper';
 import DeviceInfo from 'react-native-device-info';
@@ -13,14 +13,16 @@ import * as query from "../../graphql/queries";
 import { CreateProfileInput, CreateProfileMutationVariables, GetProfileQueryVariables } from "../../API";
 import { createProfile } from "../../graphql/mutations";
 import firstPageBg from "../../../assets/first-page-bg.png";
+import pageBg from "../../../assets/first-page.png";
 import _ from "lodash";
+import { RedirectionType } from "../../utils/config";
 
 const DATA = [
   {
     id: "1",
-    title: "Submit a nature call report",
-    isChecked: true,
-    route: "UCLogging"
+    title: "Submit a report",
+    isChecked: false,
+    route: RedirectionType.OPEN_REPORT_MODEL
   },
   {
     id: "2",
@@ -34,12 +36,83 @@ const DATA = [
   },
 ];
 
+
+const reports = [
+  {
+    id: "1",
+    title: "Nature call",
+    isChecked: false,
+    route: RedirectionType.GO_TO_NATURE_CALL_REPORT
+  },
+  {
+    id: "2",
+    title: "Meal",
+    isChecked: false
+  },
+  {
+    id: "3",
+    title: "Exercise",
+    isChecked: false
+  },
+  {
+    id: "4",
+    title: "Weight",
+    isChecked: false
+  },
+  {
+    id: "5",
+    title: "Personal note",
+    isChecked: false
+  },
+];
+
 export default function HomeScreen() {
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+  const [isShowModal, setIsShowModal] = useState(false);
+  const [isMyStateActive, setIsMyStateActive] = useState(false);
+  const [menuOption, setMenuOption] = useState(DATA);
+  const [allReports, setAllReports] = useState(reports);
+  const [activeLink, setActiveLink] = useState<any>("");
 
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    console.log("callsed 1");
+    setTimeout(() => {
+      if (activeLink) {
+        setActiveLink("");
+        setIsMyStateActive(false);
+        navigate(activeLink);
+      }
+    }, 100);
+  }, [activeLink]);
+
+  useEffect(() => {
+    console.log("callsed 2");
+    setTimeout(() => {
+      const activeReport: any = _.find(allReports, { isChecked: true });
+      if (activeReport && activeReport.route) {
+        navigate(activeReport.route);
+        setIsShowModal(false);
+        _.each(reports, report => report.isChecked = false);
+        setAllReports(reports);
+      }
+    }, 100);
+  }, [allReports]);
+
+  useEffect(() => {
+    console.log("callsed 3");
+    setTimeout(() => {
+      const item: any = _.find(menuOption, { isChecked: true });
+      if (item && item.route == RedirectionType.OPEN_REPORT_MODEL) {
+        setIsShowModal(true);
+        _.each(menuOption, report => report.isChecked = false);
+        setMenuOption(menuOption);
+      }
+    }, 100);
+  }, [menuOption]);
 
   const fetchProfile = async () => {
     try {
@@ -67,26 +140,139 @@ export default function HomeScreen() {
     }
   }
 
+  const handleReportClick = (report) => {
+    _.each(allReports, report => {
+      report.isChecked = false
+    });
+    report.isChecked = true;
+    setAllReports([...allReports]);
+  }
+
+  const handleNavClick = (report) => {
+    _.each(menuOption, report => {
+      report.isChecked = false
+    });
+    report.isChecked = true;
+    setMenuOption([...menuOption]);
+  }
+
+  const handleMyStateClick = () => {
+    setIsMyStateActive(true);
+    setActiveLink(RedirectionType.GO_TO_MY_STATS);
+  }
+
   return (
     <View style={{
       flex: 1, justifyContent: "center",
       alignItems: "center"
     }}>
+
       <ImageBackground source={firstPageBg} resizeMode="cover" style={{ flex: 1, justifyContent: 'center' }}>
-        <View style={{ flex: 1, paddingVertical: 40, paddingTop: 50, paddingHorizontal: 20 }}>
+        <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
+          <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{
+            flex: 1
+          }}>
+          </ImageBackground>
+        </View>
+        <View style={{ flex: 1, paddingVertical: 40, paddingTop: 50, paddingHorizontal: 20, zIndex: 20 }}>
+
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={isShowModal}
+            style={{ width: "100%", height: "100%" }}
+          >
+            <View style={{
+              flex: 1,
+              height: "100%",
+              alignItems: "center",
+              width: "100%"
+            }}>
+              <ImageBackground resizeMethod="resize" source={firstPageBg} resizeMode="cover" style={{
+                width: "100%", justifyContent: 'center', height: "100%", alignItems: 'center'
+              }}>
+                <View style={{
+                  paddingHorizontal: 20
+                }}>
+                  <Card
+                    activeOpacity={1}
+                    enableShadow={false}
+                    style={{
+                      backgroundColor: "#0202020D",
+                      borderRadius: 15,
+                      shadowOpacity: 1,
+                      shadowRadius: 0,
+                      width: "100%",
+                    }}
+                    enableBlur={false}
+                    paddingH-10
+                    paddingV-10
+                  >
+                    <View style={{ display: "flex", alignItems: "flex-end", justifyContent: "flex-end" }}>
+                      <FontAwesome
+                        onPress={() => { console.log("close"); setIsShowModal(false); setActiveLink(""); }}
+                        name="close"
+                        size={24}
+                        color="black"
+                        style={{ marginLeft: 15 }}
+                      />
+                    </View>
+                    <Text style={{
+                      fontWeight: "500", fontFamily: "Poppins-Medium", fontSize: 20, textAlign: "center", color: "#020202",
+                      marginTop: 20, marginBottom: 30
+                    }}>
+                      Submit a report
+                    </Text>
+                    <FlatList
+                      data={allReports}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <View row key={item.id}>
+                          <Button
+                            key={item.id}
+                            borderRadius={0}
+                            size={Button.sizes.xSmall}
+                            onPress={() => { handleReportClick(item) }}
+                            labelStyle={{
+                              fontWeight: "500", fontFamily: "Poppins-Medium", fontSize: 16, textAlign: "center",
+                              color: item.isChecked ? "#EBEEF6" : "#020202"
+                            }}
+                            label={item.title}
+                            style={{
+                              height: 50, backgroundColor: item.isChecked ? "#020202" : "#0202020D", borderRadius: 15,
+                              borderWidth: 0, marginBottom: 5, width: "100%", justifyContent: "center", alignItems: "center"
+                            }}
+                          />
+                        </View>
+                      )}
+                      contentContainerStyle={{
+                        alignItems: "center",
+                        gap: 3,
+                        width: "100%",
+                      }}
+                      showsHorizontalScrollIndicator={false}
+                    />
+                  </Card>
+                </View>
+              </ImageBackground>
+            </View>
+
+          </Modal>
 
           <HeaderViewContainer>
+
             <View>
               <Text style={{ fontSize: 40, fontFamily: 'Neuton-Regular', color: "#020202", width: "100%" }}>Hello 👋, </Text>
               <Text style={{ fontSize: 20, fontFamily: 'Neuton-Regular', color: "#020202", width: "100%" }}>To My UC Healing Journey</Text>
             </View>
             <View>
               <Image
-                style={{ width: 30, height: 30}}
+                style={{ width: 30, height: 30 }}
                 source={require('../../../assets/menu.png')}
               />
             </View>
           </HeaderViewContainer>
+
 
           <FlatListContainer>
             <View row marginV-15 width={"100%"} style={{ flexDirection: "column" }} >
@@ -105,7 +291,6 @@ export default function HomeScreen() {
                 enableBlur={false}
                 paddingH-10
                 paddingV-20
-                onPress={() => console.log("pressed")}
               >
                 <View width={"100%"} style={{ marginHorizontal: 5 }}>
                   <Text text70 style={{
@@ -125,7 +310,10 @@ export default function HomeScreen() {
                       textColor: processColor('white'),
                       markerFontSize: 14
                     }}
-                    xAxis={{ drawGridLines: false, position: "BOTTOM", drawAxisLine: false, drawLabels: false, granularityEnabled: true, granularity: 1 }}
+                    xAxis={{
+                      drawGridLines: false, position: "BOTTOM", drawAxisLine: false, drawLabels: false,
+                      granularityEnabled: true, granularity: 1
+                    }}
                     yAxis={{
                       limitLines: [{ lineColor: 0 }],
                       axisLineColor: 0,
@@ -142,7 +330,8 @@ export default function HomeScreen() {
                     data={{
                       dataSets: [
                         {
-                          label: "Movements", values: [{ y: 1 }, { y: 2 }, { y: 1 }, { y: 3 }, { y: 4 }, { y: 3 }, { y: 3 }], config: {
+                          label: "Movements", values: [{ y: 1 }, { y: 2 }, { y: 1 }, { y: 3 }, { y: 4 },
+                          { y: 3 }, { y: 3 }], config: {
                             lineWidth: 3,
                             drawValues: false,
                             circleRadius: 3,
@@ -166,12 +355,16 @@ export default function HomeScreen() {
                   outline
                   borderRadius={0}
                   size={Button.sizes.xSmall}
-                  onPress={() => navigate("MyStats")}
-                  labelStyle={{ fontFamily: "Poppins-Medium", fontSize: 16, textAlign: "center", color: "#F2E6EE" }}
+                  onPress={() => handleMyStateClick()}
+                  labelStyle={{
+                    fontFamily: "Poppins-Medium", fontSize: 16, textAlign: "center",
+                    color: isMyStateActive ? "#EBEEF6" : "#020202"
+                  }}
                   label="My Stats"
                   $textDefault
                   style={{
-                    height: 53, backgroundColor: "#020202", borderColor: "#5C5A57", borderWidth: 1, marginBottom: 5,
+                    height: 53, backgroundColor: isMyStateActive ? "#020202" : "#0202020D",
+                    borderColor: "#5C5A57", borderWidth: 0, marginBottom: 5,
                     width: "100%", justifyContent: "center", borderRadius: 15, marginTop: 15
                   }}
                 />
@@ -197,10 +390,9 @@ export default function HomeScreen() {
                 enableBlur={false}
                 paddingH-10
                 paddingV-10
-                onPress={() => console.log("pressed")}
               >
                 <FlatList
-                  data={DATA}
+                  data={menuOption}
                   scrollEnabled={false}
                   renderItem={({ item }) => (
                     <View row key={item.id}>
@@ -208,9 +400,9 @@ export default function HomeScreen() {
                         key={item.id}
                         borderRadius={0}
                         size={Button.sizes.xSmall}
-                        onPress={() => navigate(item.route as any)}
+                        onPress={() => handleNavClick(item)}
                         labelStyle={{
-                          fontWeight: "500", fontFamily: "Poppins-Medium", fontSize: 16, textAlign: "center", 
+                          fontWeight: "500", fontFamily: "Poppins-Medium", fontSize: 16, textAlign: "center",
                           color: item.isChecked ? "#EBEEF6" : "#020202"
                         }}
                         label={item.title}
@@ -254,3 +446,47 @@ const FlatListContainer = styled(View)`
   gap: 12px;
   margin-top: 24px;
 `;
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+});
