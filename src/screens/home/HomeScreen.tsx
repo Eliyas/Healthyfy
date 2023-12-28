@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { FlatList, TouchableOpacity, Image, processColor, ImageBackground, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-import { FontAwesome } from "@expo/vector-icons";
 import { Button, Card, Modal, Text, View } from "react-native-ui-lib";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { LineChart } from 'react-native-charts-wrapper';
@@ -22,7 +21,7 @@ const DATA = [
     id: "1",
     title: "Submit a report",
     isChecked: false,
-    route: RedirectionType.OPEN_REPORT_MODEL
+    route: "ReportModal"
   },
   {
     id: "2",
@@ -36,42 +35,10 @@ const DATA = [
   },
 ];
 
-
-const reports = [
-  {
-    id: "1",
-    title: "Nature call",
-    isChecked: false,
-    route: RedirectionType.GO_TO_NATURE_CALL_REPORT
-  },
-  {
-    id: "2",
-    title: "Meal",
-    isChecked: false
-  },
-  {
-    id: "3",
-    title: "Exercise",
-    isChecked: false
-  },
-  {
-    id: "4",
-    title: "Weight",
-    isChecked: false
-  },
-  {
-    id: "5",
-    title: "Personal note",
-    isChecked: false
-  },
-];
-
 export default function HomeScreen() {
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
-  const [isShowModal, setIsShowModal] = useState(false);
   const [isMyStateActive, setIsMyStateActive] = useState(false);
   const [menuOption, setMenuOption] = useState(DATA);
-  const [allReports, setAllReports] = useState(reports);
   const [activeLink, setActiveLink] = useState<any>("");
 
   useEffect(() => {
@@ -82,33 +49,22 @@ export default function HomeScreen() {
     console.log("callsed 1");
     setTimeout(() => {
       if (activeLink) {
+        navigate(activeLink);
         setActiveLink("");
         setIsMyStateActive(false);
-        navigate(activeLink);
       }
     }, 100);
   }, [activeLink]);
 
-  useEffect(() => {
-    console.log("callsed 2");
-    setTimeout(() => {
-      const activeReport: any = _.find(allReports, { isChecked: true });
-      if (activeReport && activeReport.route) {
-        navigate(activeReport.route);
-        setIsShowModal(false);
-        _.each(reports, report => report.isChecked = false);
-        setAllReports(reports);
-      }
-    }, 100);
-  }, [allReports]);
+
 
   useEffect(() => {
     console.log("callsed 3");
     setTimeout(() => {
       const item: any = _.find(menuOption, { isChecked: true });
-      if (item && item.route == RedirectionType.OPEN_REPORT_MODEL) {
-        setIsShowModal(true);
-        _.each(menuOption, report => report.isChecked = false);
+      if (item) {
+        setActiveLink(item.route);
+        _.each(menuOption, report => { report.isChecked = false });
         setMenuOption(menuOption);
       }
     }, 100);
@@ -140,14 +96,6 @@ export default function HomeScreen() {
     }
   }
 
-  const handleReportClick = (report) => {
-    _.each(allReports, report => {
-      report.isChecked = false
-    });
-    report.isChecked = true;
-    setAllReports([...allReports]);
-  }
-
   const handleNavClick = (report) => {
     _.each(menuOption, report => {
       report.isChecked = false
@@ -176,89 +124,6 @@ export default function HomeScreen() {
         </View>
         <View style={{ flex: 1, paddingVertical: 40, paddingTop: 50, paddingHorizontal: 20, zIndex: 20 }}>
 
-          <Modal
-            animationType="slide"
-            transparent={false}
-            visible={isShowModal}
-            style={{ width: "100%", height: "100%" }}
-          >
-            <View style={{
-              flex: 1,
-              height: "100%",
-              alignItems: "center",
-              width: "100%"
-            }}>
-              <ImageBackground resizeMethod="resize" source={firstPageBg} resizeMode="cover" style={{
-                width: "100%", justifyContent: 'center', height: "100%", alignItems: 'center'
-              }}>
-                <View style={{
-                  paddingHorizontal: 20
-                }}>
-                  <Card
-                    activeOpacity={1}
-                    enableShadow={false}
-                    style={{
-                      backgroundColor: "#0202020D",
-                      borderRadius: 15,
-                      shadowOpacity: 1,
-                      shadowRadius: 0,
-                      width: "100%",
-                    }}
-                    enableBlur={false}
-                    paddingH-10
-                    paddingV-10
-                  >
-                    <View style={{ display: "flex", alignItems: "flex-end", justifyContent: "flex-end" }}>
-                      <FontAwesome
-                        onPress={() => { console.log("close"); setIsShowModal(false); setActiveLink(""); }}
-                        name="close"
-                        size={24}
-                        color="black"
-                        style={{ marginLeft: 15 }}
-                      />
-                    </View>
-                    <Text style={{
-                      fontWeight: "500", fontFamily: "Poppins-Medium", fontSize: 20, textAlign: "center", color: "#020202",
-                      marginTop: 20, marginBottom: 30
-                    }}>
-                      Submit a report
-                    </Text>
-                    <FlatList
-                      data={allReports}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <View row key={item.id}>
-                          <Button
-                            key={item.id}
-                            borderRadius={0}
-                            size={Button.sizes.xSmall}
-                            onPress={() => { handleReportClick(item) }}
-                            labelStyle={{
-                              fontWeight: "500", fontFamily: "Poppins-Medium", fontSize: 16, textAlign: "center",
-                              color: item.isChecked ? "#EBEEF6" : "#020202"
-                            }}
-                            label={item.title}
-                            style={{
-                              height: 50, backgroundColor: item.isChecked ? "#020202" : "#0202020D", borderRadius: 15,
-                              borderWidth: 0, marginBottom: 5, width: "100%", justifyContent: "center", alignItems: "center"
-                            }}
-                          />
-                        </View>
-                      )}
-                      contentContainerStyle={{
-                        alignItems: "center",
-                        gap: 3,
-                        width: "100%",
-                      }}
-                      showsHorizontalScrollIndicator={false}
-                    />
-                  </Card>
-                </View>
-              </ImageBackground>
-            </View>
-
-          </Modal>
-
           <HeaderViewContainer>
 
             <View>
@@ -272,7 +137,6 @@ export default function HomeScreen() {
               />
             </View>
           </HeaderViewContainer>
-
 
           <FlatListContainer>
             <View row marginV-15 width={"100%"} style={{ flexDirection: "column" }} >

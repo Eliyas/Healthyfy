@@ -6,6 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "../screens/home/HomeScreen";
 import UCLoggingScreen from "../screens/uc_logging/UCLoggingScreen";
 import MyStatsScreen from "../screens/MyStatsScreen";
+import ReportPopup from "../components/ReportPopup";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ export default function RootNavigation() {
        <Stack.Screen name="Home" component={HomeScreen} />
        <Stack.Screen name="UCLogging" component={UCLoggingScreen} />
        <Stack.Screen name="MyStats" component={MyStatsScreen} />
+       <Stack.Screen name="ReportModal" component={ReportPopup} />
       </Stack.Navigator>
     </NavigationContainer>
   );

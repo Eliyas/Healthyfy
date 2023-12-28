@@ -12,6 +12,7 @@ type TabNavigationType = {
   UCLogging: undefined;
   Home: undefined;
   MyStats: undefined;
+  ReportModal: undefined;
 };
 
 //tabs nav types
