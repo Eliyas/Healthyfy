@@ -26,6 +26,7 @@ const DATA = [
   {
     id: "2",
     title: "Practical Advice",
+    route: "MyUCHealingRecommendations",
     isChecked: false
   },
   {
