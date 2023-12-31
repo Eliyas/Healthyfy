@@ -111,19 +111,22 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={{
-      flex: 1, justifyContent: "center",
-      alignItems: "center"
-    }}>
+    <ImageBackground source={firstPageBg} resizeMode="cover" style={{ flex: 1, justifyContent: 'center' }}>
+      <View style={{
+        flex: 1, justifyContent: "center",
+        alignItems: "center"
+      }}>
 
-      <ImageBackground source={firstPageBg} resizeMode="cover" style={{ flex: 1, justifyContent: 'center' }}>
+        <SafeAreaView style={{ opacity: 0 }} />
+
         <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
           <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{
             flex: 1
           }}>
           </ImageBackground>
         </View>
-        <View style={{ flex: 1, paddingVertical: 40, paddingTop: 50, paddingHorizontal: 20, zIndex: 20 }}>
+
+        <View style={{ flex: 1, display: "flex", paddingVertical: 40, paddingTop: 20, paddingHorizontal: 20, zIndex: 12 }}>
 
           <HeaderViewContainer>
 
@@ -290,8 +293,13 @@ export default function HomeScreen() {
           </FlatListContainer>
 
         </View>
-      </ImageBackground>
-    </View >
+
+      </View >
+
+      <SafeAreaView style={{ opacity: 0 }} />
+
+    </ImageBackground>
+
   );
 }
 

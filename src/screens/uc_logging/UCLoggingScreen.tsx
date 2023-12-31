@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import Carousel from "react-native-reanimated-carousel";
-import { ActivityIndicator, Dimensions, Keyboard, TouchableWithoutFeedback } from "react-native";
+import { ActivityIndicator, Dimensions, ImageBackground, Keyboard, TouchableWithoutFeedback } from "react-native";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import _ from "lodash";
 import {
@@ -13,6 +13,7 @@ import {
   Colors,
   Checkbox,
   TextField,
+  Image,
 } from "react-native-ui-lib";
 import { FieldLabelType } from "../../constants";
 import {
@@ -32,9 +33,12 @@ import DateField from "../../components/DateTimeUCComponent";
 import SingleChoiceUCComponent from "../../components/SingleChoiceUCComponent";
 import Fuse from 'fuse.js'
 import DeviceInfo from 'react-native-device-info';
+import firstPageBg from "../../../assets/uc-bg.png";
+import pageBg from "../../../assets/first-page.png";
+import DateTimeField from "../../components/DateTimeUCComponent";
 
 const config: any = {
-  mode: "horizontal-stack",
+  mode: "stack-vertical-left",
   snapDirection: "left",
   pagingEnabled: true,
   loop: false,
@@ -45,54 +49,50 @@ const config: any = {
 
 const DATA = [
   {
-    id: 1,
-    label: FieldLabelType.DateTime,
-    page: 0
-  },
-  {
     id: 2,
     label: FieldLabelType.Urgency,
-    page: 1
+    subText: "Are you running to the toilet?",
+    page: 0
   },
   {
     id: 3,
     label: FieldLabelType.Consistency,
-    page: 2
+    page: 1
   },
   {
     id: 4,
     label: FieldLabelType.Spray,
-    page: 3
+    page: 2
   },
   {
     id: 5,
     label: FieldLabelType.Volume,
-    page: 4
+    page: 3
   },
   {
     id: 6,
     label: FieldLabelType.Blood,
-    page: 5
+    page: 4
   },
   {
     id: 7,
     label: FieldLabelType.Gas,
-    page: 6
+    page: 5
   },
   {
     id: 8,
     label: FieldLabelType.Pain,
-    page: 7
+    page: 6
   },
   {
     id: 9,
     label: FieldLabelType.Nausea,
-    page: 8
+    page: 7
   },
   {
     id: 10,
     label: FieldLabelType.Tag,
-    page: 9
+    page: 8
   },
   {
     id: 11,
@@ -383,16 +383,16 @@ export default function UCLoggingScreen() {
       activeOpacity={1}
       enableShadow={true}
       style={{
-        height: 504,
         elevation: 10,
         shadowColor: "#52006A",
-        backgroundColor: "#F6F1F1",
         shadowOpacity: 0.2,
         shadowRadius: 3,
-        borderRadius: 0,
+        borderRadius: 25,
+        height: 400,
         marginHorizontal: 5,
-        width: "88%",
-        alignItems: "center"
+        width: "95%",
+        alignItems: "center",
+        backgroundColor: "#fff7ff"
       }}
       enableBlur={false}
       paddingH-10
@@ -403,7 +403,7 @@ export default function UCLoggingScreen() {
         <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 30, textAlign: "center", paddingVertical: 40, }}>Submit the report?</Text>
         <Button
           fullWidth
-          borderRadius={0}
+          borderRadius={25}
           size={Button.sizes.xSmall}
           text70H
           color="white"
@@ -412,19 +412,19 @@ export default function UCLoggingScreen() {
           onPress={handleOnSubmit}
           labelStyle={{ textAlign: "center" }}
           backgroundColor="#5C5A57"
-          style={{ borderWidth: 1, paddingVertical: 10, marginBottom: 13 }}
+          style={{ borderWidth: 0, borderRadius: 25, paddingVertical: 10, marginBottom: 13 }}
         />
 
         <Button
           label="Reset"
           fullWidth
-          borderRadius={0}
+          borderRadius={25}
           size={Button.sizes.xSmall}
           text70H
           onPress={handleReset}
           $textDefault
           backgroundColor="white"
-          style={{ borderWidth: 1, paddingVertical: 10, marginBottom: 13 }}
+          style={{ borderWidth: 0, borderRadius: 25, paddingVertical: 10, marginBottom: 13 }}
         />
       </View>
 
@@ -437,33 +437,61 @@ export default function UCLoggingScreen() {
   )
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={{ flex: 1, backgroundColor: "#E6DBD9" }}>
-        <Container style={{ backgroundColor: "#E6DBD9" }}>
-          <HeaderViewContainer>
-            <Text text50 style={{ color: "#514D4A", textAlign: "center", width: "100%" }}>My UC Healing Journey</Text>
-          </HeaderViewContainer>
+    <ImageBackground
+      source={firstPageBg}
+      resizeMode="contain"
+      style={{
+        overflow: "hidden",
+        flex: 1
+      }}>
+      <SafeAreaView style={{ opacity: 0 }} />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={{ flex: 1, paddingHorizontal: 10 }}>
 
-          <View style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, marginTop: "15%", flexDirection: "row" }}>
-            <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>Nature's Call Report</Text>
-            {!!currentPage && currentPage <= 10 && <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 20 }}>
-              {!!currentPage ? currentPage : 1}/10
-            </Text>}
+          <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
+            <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{
+              flex: 1
+            }}>
+            </ImageBackground>
           </View>
-          <View style={{ display: "flex", }}>
+
+          <View style={{ display: "flex", marginBottom: 5, marginTop: 10, justifyContent: "space-between", flexDirection: "row", zIndex: 12 }}>
+            <Image
+              style={{ width: 53, height: 53 }}
+              source={require('../../../assets/back-icon.png')}
+            />
+            <Image
+              style={{ width: 53, height: 53 }}
+              source={require('../../../assets/menu2.png')}
+            />
+          </View>
+
+          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", zIndex: 12 }}>
+            <View style={{ display: "flex", marginBottom: 10, flexDirection: "column" }}>
+              <Text style={{ color: "#312E2B", fontWeight: "600", fontSize: 40, fontFamily: "Poppins-Bold" }}>Poo</Text>
+              <Text style={{ color: "#312E2B", fontWeight: "300", fontSize: 20, fontFamily: "Poppins-Regular" }}>Report</Text>
+            </View>
+
+            <View>
+              <DateTimeField dateValue={date} timeValue={time} setDateValue={handleDateSelect}
+                setTimeValue={handleTimeSelect} />
+            </View>
+          </View>
+
+          <View style={{ display: "flex", zIndex: 12 }}>
             <Carousel
               ref={carouselRef}
               onScrollEnd={handleSlideEnd}
               style={{
-                height: 700,
                 alignItems: "center",
                 justifyContent: "center",
-                paddingTop: 10
+                paddingTop: 10,
+                height: 420
               }}
               width={width}
               pagingEnabled={config.pagingEnabled}
               snapEnabled={config.snapEnabled}
-              mode={config.mode}
+              mode={"horizontal-stack"}
               loop={config.loop}
               autoPlay={config.autoPlay}
               autoPlayReverse={config.autoPlayReverse}
@@ -474,7 +502,7 @@ export default function UCLoggingScreen() {
               }}
               customConfig={() => ({ type: "positive", viewCount })}
               renderItem={({ item }) => (
-                <View>
+                <View style={{ paddingRight: 15 }}>
                   {item.label == FieldLabelType.Submit
                     ?
                     <SubmitSection item={item} />
@@ -485,15 +513,15 @@ export default function UCLoggingScreen() {
                         activeOpacity={1}
                         enableShadow={true}
                         style={{
-                          borderRadius: 0,
+                          borderRadius: 25,
+                          height: 400,
                           marginHorizontal: 5,
-                          height: 504,
                           elevation: 10,
-                          backgroundColor: "#F6F1F1",
+                          backgroundColor: "#fff7ff",
                           shadowColor: "#52006A",
                           shadowOpacity: 0.2,
                           shadowRadius: 3,
-                          width: "88%",
+                          width: "95%",
                           alignItems: "center",
                         }}
                         enableBlur={false}
@@ -503,14 +531,30 @@ export default function UCLoggingScreen() {
                       >
                         {item.label == FieldLabelType.DateTime && <DateField label={item.label} dateValue={date} timeValue={time} setDateValue={handleDateSelect}
                           setTimeValue={handleTimeSelect} />}
-                        {item.label == FieldLabelType.Urgency && <SingleChoiceUCComponent label={item.label} value={urgency} handleValueSelect={handleValueSelect} />}
-                        {item.label == FieldLabelType.Consistency && <SingleChoiceUCComponent label={item.label} value={consistency} handleValueSelect={handleValueSelect} />}
-                        {item.label == FieldLabelType.Spray && <SingleChoiceUCComponent label={item.label} value={spray} handleValueSelect={handleValueSelect} />}
-                        {item.label == FieldLabelType.Volume && <SingleChoiceUCComponent label={item.label} value={volume} handleValueSelect={handleValueSelect} />}
-                        {item.label == FieldLabelType.Blood && <SingleChoiceUCComponent label={item.label} value={blood} handleValueSelect={handleValueSelect} />}
-                        {item.label == FieldLabelType.Gas && <SingleChoiceUCComponent label={item.label} value={gas} handleValueSelect={handleValueSelect} />}
-                        {item.label == FieldLabelType.Pain && <SingleChoiceUCComponent label={item.label} value={pain} handleValueSelect={handleValueSelect} />}
-                        {item.label == FieldLabelType.Nausea && <SingleChoiceUCComponent label={item.label} value={nausea} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Urgency && <SingleChoiceUCComponent subLabel={"Are you running to the toilet?"} metricType={FieldLabelType.Urgency}
+                          label={item.label} value={urgency} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Consistency && <SingleChoiceUCComponent subLabel={"How does the poo look?"} metricType={FieldLabelType.Consistency}
+                          label={item.label} value={consistency} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Spray && <SingleChoiceUCComponent subLabel={"Is the spray on the toilet bowel"} metricType={FieldLabelType.Spray}
+                          label={item.label} value={spray} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Volume && <SingleChoiceUCComponent subLabel={"How much is coming out?"} metricType={FieldLabelType.Volume}
+                          label={item.label} value={volume} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Blood && <SingleChoiceUCComponent subLabel={"Is there blood in the poop?"} metricType={FieldLabelType.Blood}
+                          label={item.label} value={blood} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Gas && <SingleChoiceUCComponent subLabel={"How much gas is released?"} metricType={FieldLabelType.Gas}
+                          label={item.label} value={gas} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Pain && <SingleChoiceUCComponent subLabel={"Are you experiencing pain?"} metricType={FieldLabelType.Pain}
+                          label={item.label} value={pain} handleValueSelect={handleValueSelect} />}
+
+                        {item.label == FieldLabelType.Nausea && <SingleChoiceUCComponent subLabel={"Are you feeling nauseous?"} metricType={FieldLabelType.Nausea}
+                          label={item.label} value={nausea} handleValueSelect={handleValueSelect} />}
 
                       </Card>
 
@@ -519,15 +563,14 @@ export default function UCLoggingScreen() {
                         activeOpacity={1}
                         enableShadow={true}
                         style={{
-                          borderRadius: 0,
+                          borderRadius: 25,
                           marginHorizontal: 5,
-                          backgroundColor: "#F6F1F1",
-                          width: "88%",
-                          height: 504,
+                          backgroundColor: "#fff7ff",
                           elevation: 10,
                           shadowColor: "#52006A",
                           shadowOpacity: 0.2,
                           shadowRadius: 3,
+                          width: "95%",
                           justifyContent: "center",
                           alignItems: "center",
                         }}
@@ -568,7 +611,7 @@ export default function UCLoggingScreen() {
                           />
                         </View>
 
-                        <ScrollView style={{ height: 280 }} automaticallyAdjustKeyboardInsets={true}>
+                        <ScrollView style={{ height: 270 }} automaticallyAdjustKeyboardInsets={true}>
                           {tags.map((tag: any, index: number) => (
                             <View
                               style={{ flexDirection: "row", marginHorizontal: 10 }}
@@ -671,11 +714,22 @@ export default function UCLoggingScreen() {
                 </View>
               )}
             />
-
           </View>
-        </Container>
-      </View>
-    </TouchableWithoutFeedback>
+
+          <View style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, flexDirection: "row", zIndex: 12 }}>
+            {!!currentPage && currentPage <= 10 && <Text style={{ color: "#312E2B", fontWeight: "400", fontSize: 16 }}>
+              {!!currentPage ? currentPage : 1}/10
+            </Text>}
+            <Text style={{ fontSize: 16, color: "#020202", fontWeight: "300", fontFamily: "Poppins-regular" }}>swipe to next 👉</Text>
+          </View>
+
+        </View>
+
+      </TouchableWithoutFeedback>
+      <SafeAreaView style={{ opacity: 0 }} />
+    </ImageBackground>
+
+
   );
 }
 

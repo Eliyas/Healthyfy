@@ -1,49 +1,59 @@
+import moment from "moment";
 import { Button, DateTimePicker, Text, View } from "react-native-ui-lib";
 
-const DateField = ({ label, dateValue, timeValue, setDateValue, setTimeValue }: any) => {
-    return (
-      <View style={{ alignItems: "center", display: "flex", width: "100%" }}>
-        <Text text70 style={{ color: "#312E2B", fontWeight: "700", fontSize: 20, paddingTop: 30, paddingBottom: 40 }}>{label}</Text>
-        <Button
-          outline
-          borderRadius={0}
-          size={Button.sizes.xSmall}
-          text60
-          $textDefault
-          style={{
-            height: 55, backgroundColor: "#FFFFFF", borderColor: "#5C5A57", borderWidth: 1, marginBottom: 13,
-            width: "100%", justifyContent: "center"
-          }}
-        >
-          <DateTimePicker
-            value={dateValue}
-            style={{ fontWeight: "400", fontSize: 20 }}
-            onChange={(currentValue) => { setDateValue(currentValue); }}
-            placeholder={"Select a date"}
-          />
-        </Button>
+const DateTimeField = ({ dateValue, timeValue, setDateValue, setTimeValue }: any) => {
 
-        <Button
-          outline
-          borderRadius={0}
-          size={Button.sizes.xSmall}
-          text60
-          $textDefault
-          style={{
-            height: 55, backgroundColor: "#FFFFFF", borderColor: "#5C5A57", borderWidth: 1,
-            marginBottom: 13, width: "100%", justifyContent: "center"
-          }}
-        >
-          <DateTimePicker
-            value={ timeValue}
-            style={{ fontWeight: "400", fontSize: 20 }}
-            onChange={(currentValue) => { setTimeValue(currentValue); }}
-            mode={"time"}
-            placeholder={"Select a Time"}
-          />
-        </Button>
-      </View>
-    );
-  };
+  const formatDate = (value, mode) => {
+    console.log(moment(value).format("MMM Do"));
+    if(mode == "time") {
+      return moment(value).format('LT');
+    } else {
+      return moment(value).format("MMM D");
+    }
+  }
 
-  export default DateField;
+
+  return (
+    <View style={{marginTop: 15, alignItems: "center", display: "flex", flexDirection: "row", justifyContent: "center" }}>
+      <Button
+        borderRadius={25}
+        size={Button.sizes.xSmall}
+        style={{
+          backgroundColor: "#0202020D", justifyContent: "center",
+        }}
+      >
+        <DateTimePicker
+          value={dateValue}
+          dateTimeFormatter={(value, mode) => formatDate(value, mode)}
+          containerStyle={{paddingHorizontal: 8, paddingVertical: 8}}
+          style={{ fontWeight: "400", fontSize: 15, width: 55, fontFamily: "Poppins-Regular" }}
+          placeholderTextColor={"#020202"}
+          mode={"date"}
+          onChange={(currentValue) => { setDateValue(currentValue); }}
+          placeholder={"Date"}
+        />
+      </Button>
+
+      <Button
+        borderRadius={25}
+        size={Button.sizes.xSmall}
+        style={{
+          backgroundColor: "#0202020D", justifyContent: "center", marginLeft: 5, paddingHorizontal: 20, paddingVertical: 10
+        }}
+      >
+        <DateTimePicker
+          value={timeValue}
+          placeholderTextColor={"#020202"}
+          dateTimeFormatter={(value, mode) => formatDate(value, mode)}
+          is24Hour={false}
+          style={{ fontWeight: "400", fontSize: 15, width: 60, fontFamily: "Poppins-Regular" }}
+          onChange={(currentValue) => { setTimeValue(currentValue); }}
+          mode={"time"}
+          placeholder={"Time"}
+        />
+      </Button>
+    </View>
+  );
+};
+
+export default DateTimeField;
