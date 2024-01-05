@@ -42,3 +42,21 @@ export const ConsistencyType = {
     LOOSE: { id: "3", label: "Loose", displayName: "Loose" },
     LIQUID: { id: "4", label: "Liquid", displayName: "Liquid" }
 }
+
+
+export const MoodTypes = {
+    Happy: { id: 1, label: "Happy", typeName: "Happy", emoji: "😊", isSelected: false },
+    EXCITED: { id: 1, label: "Excited", typeName: "Excited", emoji: "😀", isSelected: false },
+    Grateful: { id: 1, label: "Grateful", typeName: "Grateful", emoji: "😍", isSelected: false },
+    Relaxed: { id: 1, label: "Relaxed", typeName: "Relaxed", emoji: "😌", isSelected: false },
+    Content: { id: 1, label: "Content", typeName: "Content", emoji: "🙂", isSelected: false },
+    Tired: { id: 1, label: "Tired", typeName: "Tired", emoji: "😴", isSelected: false },
+    Unsure: { id: 1, label: "Unsure", typeName: "Unsure", emoji: "😕", isSelected: false },
+    Bored: { id: 1, label: "Bored", typeName: "Bored", emoji: "😐", isSelected: false },
+    Anxious: { id: 1, label: "Anxious", typeName: "Anxious", emoji: "😬", isSelected: false },
+    Angry: { id: 1, label: "Angry", typeName: "Angry", emoji: "😡", isSelected: false },
+    Stressed: { id: 1, label: "Stressed", typeName: "Stressed", emoji: "😫", isSelected: false },
+    Sad: { id: 1, label: "Sad", typeName: "Sad", emoji: "😔", isSelected: false }
+}
+
+export const DEVICE_UNIQUE_ID_KEY = "DEVICE_UNIQUE_ID_KEY";

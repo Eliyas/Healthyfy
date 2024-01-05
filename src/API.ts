@@ -57,6 +57,8 @@ export type Report = {
 
 export enum ReportType {
   POO = "POO",
+  WEIGHT = "WEIGHT",
+  MOOD = "MOOD",
 }
 
 

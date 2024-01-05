@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 import { Button, Card, Modal, Text, View } from "react-native-ui-lib";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { LineChart } from 'react-native-charts-wrapper';
-import DeviceInfo from 'react-native-device-info';
+import * as SecureStore from 'expo-secure-store';
 import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
 import * as query from "../../graphql/queries";
@@ -15,6 +15,8 @@ import firstPageBg from "../../../assets/first-page-bg.png";
 import pageBg from "../../../assets/first-page.png";
 import _ from "lodash";
 import { RedirectionType } from "../../utils/config";
+import { v4 as uuidv4 } from 'uuid';
+import { DEVICE_UNIQUE_ID_KEY } from "../../constants";
 
 const DATA = [
   {
@@ -43,8 +45,19 @@ export default function HomeScreen() {
   const [activeLink, setActiveLink] = useState<any>("");
 
   useEffect(() => {
-    fetchProfile();
+    initDeviceId();
   }, []);
+
+  const initDeviceId = async () => {
+    let uuid = uuidv4();
+    let fetchUUID = await SecureStore.getItemAsync(DEVICE_UNIQUE_ID_KEY);
+    console.log("fetchUUID", fetchUUID);
+    //if user has already signed up prior
+    if (fetchUUID) { uuid = fetchUUID }
+    await SecureStore.setItemAsync(DEVICE_UNIQUE_ID_KEY, uuid);
+    console.log("uuid", uuid);
+    fetchProfile(uuid);
+  }
 
   useEffect(() => {
     console.log("callsed 1");
@@ -71,9 +84,8 @@ export default function HomeScreen() {
     }, 100);
   }, [menuOption]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (deviceId: string) => {
     try {
-      const deviceId = await DeviceInfo.getUniqueId();
       const profile: any = await API.graphql<GraphQLQuery<GetProfileQueryVariables>>(
         {
           query: query.getProfile,

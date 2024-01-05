@@ -4,13 +4,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import { Button, Card, Checkbox, GridList, Image, Spacings, Text, View } from "react-native-ui-lib";
 import { LineChart } from 'react-native-charts-wrapper';
-import { FieldLabelType, MetricType } from "../constants";
+import { DEVICE_UNIQUE_ID_KEY, FieldLabelType, MetricType } from "../constants";
 import { GraphQLQuery } from "@aws-amplify/api";
 import { API } from 'aws-amplify';
 import * as query from "../graphql/queries";
 import { ListReportsQueryVariables } from "../API";
 import _ from "lodash";
-import DeviceInfo from 'react-native-device-info';
+import * as SecureStore from 'expo-secure-store';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 import { Dropdown } from 'react-native-element-dropdown';
 import moment from "moment";
 import firstPageBg from "../../assets/first-page-bg.png";
@@ -63,10 +65,12 @@ const MyStatsScreen = () => {
     }
 
     useEffect(() => {
-        DeviceInfo.getUniqueId().then((id) => {
-            fetchReports(id, duration)
-            setDeviceId(id);
-        });
+        SecureStore.getItemAsync(DEVICE_UNIQUE_ID_KEY)
+            .then((uuid) => {
+                console.log("uuid", uuid);
+                fetchReports(uuid, duration)
+                setDeviceId(uuid);
+            })
     }, []);
 
     const fetchReports = async (deviceId: string, duration: string) => {

@@ -15,7 +15,7 @@ import {
   TextField,
   Image,
 } from "react-native-ui-lib";
-import { FieldLabelType } from "../../constants";
+import { DEVICE_UNIQUE_ID_KEY, FieldLabelType } from "../../constants";
 import {
   CreateReportInput, CreateReportMutation, CreateTagMutationVariables, GetProfileQueryVariables, ListTagsQueryVariables, ModelTagFilterInput, ReportType
 } from "../../API";
@@ -32,10 +32,10 @@ import { generateUUID } from "../../utils";
 import DateField from "../../components/DateTimeUCComponent";
 import SingleChoiceUCComponent from "../../components/SingleChoiceUCComponent";
 import Fuse from 'fuse.js'
-import DeviceInfo from 'react-native-device-info';
 import firstPageBg from "../../../assets/uc-bg.png";
 import pageBg from "../../../assets/first-page.png";
 import DateTimeField from "../../components/DateTimeUCComponent";
+import * as SecureStore from 'expo-secure-store';
 
 const config: any = {
   mode: "stack-vertical-left",
@@ -100,6 +100,7 @@ const DATA = [
   },
 ];
 let fuse: any;
+
 export default function UCLoggingScreen() {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
@@ -149,7 +150,9 @@ export default function UCLoggingScreen() {
   }, [toastInfo.isShowToast]);
 
   useEffect(() => {
-    DeviceInfo.getUniqueId().then((id) => {
+    SecureStore.getItemAsync(DEVICE_UNIQUE_ID_KEY)
+    .then((id) => {
+      console.log("uuid", id);
       setProfileId(id);
       fetchTags(id);
     });
@@ -468,7 +471,7 @@ export default function UCLoggingScreen() {
 
           <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", zIndex: 12 }}>
             <View style={{ display: "flex", marginBottom: 10, flexDirection: "column" }}>
-              <Text style={{ color: "#312E2B", fontWeight: "600", fontSize: 40, fontFamily: "Poppins-Bold" }}>Poo</Text>
+              <Text style={{ color: "#312E2B", fontWeight: "600", fontSize: 40, fontFamily: "Poppins-SemiBold" }}>Poo</Text>
               <Text style={{ color: "#312E2B", fontWeight: "300", fontSize: 20, fontFamily: "Poppins-Regular" }}>Report</Text>
             </View>
 

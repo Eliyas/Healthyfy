@@ -27,11 +27,18 @@ const reports = [
     },
     {
         id: "4",
-        title: "Weight",
-        isChecked: false
+        title: "Mood",
+        isChecked: false,
+        route: RedirectionType.MOOD
     },
     {
         id: "5",
+        title: "Weight",
+        isChecked: false,
+        route: RedirectionType.WEIGHT_REPORT
+    },
+    {
+        id: "6",
         title: "Personal note",
         isChecked: false
     },
@@ -46,12 +53,19 @@ export default function ReportPopup() {
         setTimeout(() => {
             const activeReport: any = _.find(allReports, { isChecked: true });
             if (activeReport && activeReport.route) {
-                navigate(activeReport.route);
-                _.each(reports, report => report.isChecked = false);
+                _.each(reports, report => {
+                    report.isChecked = false
+                });
                 setAllReports(reports);
+                navigate(activeReport.route);
             }
         }, 100);
     }, [allReports]);
+
+    useEffect(() => {
+        _.each(reports, report => report.isChecked = false);
+        setAllReports(reports);
+    }, []);
 
 
     const handleReportClick = (report) => {
