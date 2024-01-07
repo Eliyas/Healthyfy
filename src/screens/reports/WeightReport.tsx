@@ -14,6 +14,8 @@ import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import Toast from "../../components/Toast";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 export default function WeightReport() {
@@ -21,15 +23,15 @@ export default function WeightReport() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [profileId, setProfileId] = useState("");
     const [weight, setWeight] = useState("");
-    const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+    const { goBack }: NavigationProp<TabNavigationType> = useNavigation();
     const [toastInfo, setToastInfo] = useState({
         isSuccess: false,
         message: "",
-        isShowToast: false
+        navigatePath: ""
     });
 
     useEffect(() => {
-        if(isSubmitted) {
+        if (isSubmitted) {
             handleOnSubmit();
         }
     }, [isSubmitted]);
@@ -60,10 +62,10 @@ export default function WeightReport() {
                 });
             console.log(" Success", reportResponse);
             setIsSubmitted(false);
-            navigate("Home");
+            setToastInfo({ message: "Report created successfully", isSuccess: true, navigatePath: "Home" });
         } catch (err) {
             console.error("Failed to create report");
-            setToastInfo({ isShowToast: true, message: "Failed to create report. Please try after sometime", isSuccess: false });
+            setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false, navigatePath: "" });
             console.error(err);
         }
 
@@ -73,7 +75,7 @@ export default function WeightReport() {
     return (
         <ImageBackground source={firstPageBg} resizeMode="cover" style={{ flex: 1 }}>
             <SafeAreaView style={{ opacity: 0 }} />
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, paddingHorizontal: 10, }}>
 
                 <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
                     <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{
@@ -83,25 +85,27 @@ export default function WeightReport() {
                 </View>
 
                 <View style={{ display: "flex", marginBottom: 5, marginTop: 10, justifyContent: "space-between", flexDirection: "row", zIndex: 12 }}>
-                    <Image
-                        style={{ width: 53, height: 53 }}
-                        source={require('../../../assets/back-icon.png')}
-                    />
+                    <TouchableOpacity onPress={goBack}>
+                        <Image
+                            style={{ width: 53, height: 53 }}
+                            source={require('../../../assets/back-icon.png')}
+                        />
+                    </TouchableOpacity>
                     <Image
                         style={{ width: 53, height: 53 }}
                         source={require('../../../assets/menu2.png')}
                     />
                 </View>
 
-                <View style={{ display: "flex", paddingVertical: 40, paddingTop: 20, paddingHorizontal: 20, zIndex: 12 }}>
+                <View style={{ display: "flex", paddingVertical: 40, paddingTop: 20, zIndex: 12 }}>
 
                     <HeaderViewContainer>
                         <View style={{ marginBottom: 10 }}>
-                            <Text style={{ color: "#312E2B", fontWeight: "600", fontSize: 40, fontFamily: "Poppins-SemiBold" }}>Weight Report </Text>
+                            <Text style={{ color: "#312E2B", fontWeight: "600", fontSize: 38, fontFamily: "Poppins-SemiBold" }}>Weight Report </Text>
                         </View>
                     </HeaderViewContainer>
 
-                    <View style={{ paddingRight: 15 }}>
+                    <View style={{ paddingRight: 15, width: "100%" }}>
                         <Card
                             activeOpacity={1}
                             enableShadow={true}
@@ -114,7 +118,6 @@ export default function WeightReport() {
                                 shadowColor: "#52006A",
                                 shadowOpacity: 0.2,
                                 shadowRadius: 3,
-                                width: "95%",
                                 alignItems: "center",
                             }}
                             enableBlur={false}
@@ -167,16 +170,15 @@ export default function WeightReport() {
                                         label="Submit"
                                     />
                                 </View>
+
+                                <Toast toastInfo={toastInfo} setToastInfo={setToastInfo} />
                             </View>
 
                         </Card>
                     </View>
                 </View>
 
-                {toastInfo.isShowToast && <Text style={{
-                    width: "100%", paddingVertical: 10, paddingHorizontal: 10, color: "white", fontSize: 17, fontWeight: "400",
-                    backgroundColor: toastInfo.isSuccess ? Colors.green30 : Colors.red30
-                }}>{toastInfo.message}</Text>}
+
 
             </View >
             <SafeAreaView style={{ opacity: 0 }} />

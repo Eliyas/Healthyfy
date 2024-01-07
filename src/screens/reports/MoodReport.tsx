@@ -15,6 +15,7 @@ import { API } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import _ from "lodash";
+import Toast from "../../components/Toast";
 
 
 export default function MoodReport() {
@@ -22,12 +23,11 @@ export default function MoodReport() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [profileId, setProfileId] = useState("");
     const [moods, setMoods] = useState(Object.values(MoodTypes));
-    const [mood, setMood] = useState("");
-    const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+    const { goBack }: NavigationProp<TabNavigationType> = useNavigation();
     const [toastInfo, setToastInfo] = useState({
         isSuccess: false,
         message: "",
-        isShowToast: false
+        navigatePath: ""
     });
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export default function MoodReport() {
 
     const handleOnSubmit = async () => {
         const dateTimeIso = moment().toISOString();
-        const mood = _.find(moods, {isSelected: true});
+        const mood = _.find(moods, { isSelected: true });
         const input: CreateReportInput = {
             type: ReportType.MOOD,
             dateTime: dateTimeIso,
@@ -66,10 +66,10 @@ export default function MoodReport() {
                 });
             console.log(" Success", reportResponse);
             setIsSubmitted(false);
-            navigate("Home");
+            setToastInfo({ message: "Report created successfully", isSuccess: true, navigatePath: "Home" });
         } catch (err) {
             console.error("Failed to create report");
-            setToastInfo({ isShowToast: true, message: "Failed to create report. Please try after sometime", isSuccess: false });
+            setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false, navigatePath: "" });
             console.error(err);
         }
 
@@ -86,7 +86,7 @@ export default function MoodReport() {
     return (
         <ImageBackground source={firstPageBg} resizeMode="cover" style={{ flex: 1 }}>
             <SafeAreaView style={{ opacity: 0 }} />
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, paddingHorizontal: 20 }}>
 
                 <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
                     <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{
@@ -96,26 +96,28 @@ export default function MoodReport() {
                 </View>
 
                 <View style={{ display: "flex", marginBottom: 5, marginTop: 10, justifyContent: "space-between", flexDirection: "row", zIndex: 12 }}>
-                    <Image
-                        style={{ width: 53, height: 53 }}
-                        source={require('../../../assets/back-icon.png')}
-                    />
+                    <TouchableOpacity onPress={goBack}>
+                        <Image
+                            style={{ width: 53, height: 53 }}
+                            source={require('../../../assets/back-icon.png')}
+                        />
+                    </TouchableOpacity>
                     <Image
                         style={{ width: 53, height: 53 }}
                         source={require('../../../assets/menu2.png')}
                     />
                 </View>
 
-                <View style={{ display: "flex", paddingVertical: 40, paddingTop: 20, paddingHorizontal: 20, zIndex: 12 }}>
+                <View style={{ display: "flex", paddingVertical: 40, paddingTop: 20,  zIndex: 12 }}>
 
                     <HeaderViewContainer>
                         <View style={{ marginBottom: 10 }}>
-                            <Text style={{ color: "#312E2B", fontWeight: "600", fontSize: 40, fontFamily: "Poppins-SemiBold" }}>Mood Report</Text>
+                            <Text style={{ color: "#312E2B", fontWeight: "600", fontSize: 38, fontFamily: "Poppins-SemiBold" }}>Mood Report</Text>
                             <Text style={{ fontSize: 20, fontFamily: 'Poppins-Regular', color: "#020202", width: "100%" }}>How you feeling?</Text>
                         </View>
                     </HeaderViewContainer>
 
-                    <View style={{ paddingRight: 15 }}>
+                    <View style={{ paddingRight: 15, width: "100%", }}>
                         <Card
                             activeOpacity={1}
                             enableShadow={true}
@@ -128,7 +130,6 @@ export default function MoodReport() {
                                 shadowColor: "#52006A",
                                 shadowOpacity: 0.2,
                                 shadowRadius: 3,
-                                width: "95%",
                                 alignItems: "center",
                             }}
                             enableBlur={false}
@@ -142,8 +143,8 @@ export default function MoodReport() {
                                     width: "100%", display: "flex", justifyContent: "space-between",
                                     flexWrap: "wrap", marginTop: 10, marginBottom: 10
                                 }}>
-                                    {moods.map(mood => (
-                                        <View style={{ width: "25%", marginBottom: 15 }}>
+                                    {moods.map((mood, index) => (
+                                        <View key={index} style={{ width: "25%", marginBottom: 15 }}>
                                             <TouchableOpacity onPress={() => handleClick(mood)}>
                                                 <View style={{
                                                     width: 50, height: 50, borderRadius: 50, backgroundColor: mood.isSelected ? "#5C5A57" : "#0202020D",
@@ -151,7 +152,7 @@ export default function MoodReport() {
                                                 }}>
                                                     <Text style={{ fontSize: 23 }}>{mood.emoji}</Text>
                                                 </View>
-                                                <Text style={{ textAlign: "center"}}>{mood.label}</Text>
+                                                <Text style={{ textAlign: "center" }}>{mood.label}</Text>
                                             </TouchableOpacity>
                                         </View>
                                     ))}
@@ -173,16 +174,16 @@ export default function MoodReport() {
                                         label="Submit"
                                     />
                                 </View>
+
+                                <Toast toastInfo={toastInfo} setToastInfo={setToastInfo} />
+
                             </View>
 
                         </Card>
                     </View>
                 </View>
 
-                {toastInfo.isShowToast && <Text style={{
-                    width: "100%", paddingVertical: 10, paddingHorizontal: 10, color: "white", fontSize: 17, fontWeight: "400",
-                    backgroundColor: toastInfo.isSuccess ? Colors.green30 : Colors.red30
-                }}>{toastInfo.message}</Text>}
+              
 
             </View >
             <SafeAreaView style={{ opacity: 0 }} />

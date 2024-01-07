@@ -126,12 +126,13 @@ export default function UCLoggingScreen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [toastInfo, setToastInfo] = useState({
     isSuccess: false,
-    message: ""
+    message: "",
+    navigatePath: "",
   });
   const [profileId, setProfileId] = useState("");
   const carouselRef: any = useRef();
   const width = Dimensions.get('window').width;
-  const { navigate, goBack }: NavigationProp<TabNavigationType> = useNavigation();
+  const { goBack }: NavigationProp<TabNavigationType> = useNavigation();
   const viewCount = 5;
 
   const fieldLabelSetStateMap = {
@@ -351,11 +352,10 @@ export default function UCLoggingScreen() {
       });
       await Promise.all(promises);
       console.log(" Success")
-      setToastInfo({ message: "Report save successfully", isSuccess: true });
-      navigate("Home");
+      setToastInfo({ message: "Report save successfully", isSuccess: true, navigatePath: "Home" });
     } catch (err) {
       console.error("Failed to create report");
-      setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false });
+      setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false, navigatePath: "" });
       console.error(err);
     }
 
@@ -427,11 +427,6 @@ export default function UCLoggingScreen() {
           style={{ borderWidth: 0, borderRadius: 25, paddingVertical: 10, marginBottom: 13 }}
         />
       </View>
-
-      {/* {toastInfo.isShowToast && <Text style={{
-        width: "100%", paddingVertical: 10, paddingHorizontal: 10, color: "white", fontSize: 17, fontWeight: "400",
-        backgroundColor: toastInfo.isSuccess ? Colors.green30 : Colors.red30
-      }}>{toastInfo.message}</Text>} */}
 
       <Toast toastInfo={toastInfo} setToastInfo={setToastInfo} />
 

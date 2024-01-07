@@ -1,10 +1,12 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import { Colors, Text, View } from "react-native-ui-lib";
 
 
 
 const Toast = ({ toastInfo, setToastInfo }) => {
-    const { isSuccess, message } = toastInfo;
+    const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+    const { isSuccess, message, navigatePath } = toastInfo;
 
     useEffect(() => {
         console.log("toast call")
@@ -13,7 +15,8 @@ const Toast = ({ toastInfo, setToastInfo }) => {
             timer = setTimeout(() => {
                 console.log("toast hide")
                 setToastInfo({ message: "", isSuccess: isSuccess });
-            }, 5000)
+                navigate(navigatePath);
+            }, 3000)
         }
         return () => {
             if (timer) {
