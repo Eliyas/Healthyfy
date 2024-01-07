@@ -17,16 +17,6 @@ export const FieldLabelType = {
     Submit: "Submit",
 }
 
-
-export const MetricType = {
-    NONE: "None",
-    LOW: "Low",
-    MODERATE: "Moderate",
-    HIGH: "High",
-    VERY_HIGH: "Very High",
-    EMERGENCY: "Emergency!"
-}
-
 export const MetricTypeInfo = {
     NONE: { id: "6", label: "None", displayName: "none 👌" },
     LOW: { id: "4", label: "Low", displayName: "low 👍" },
@@ -36,11 +26,26 @@ export const MetricTypeInfo = {
     EMERGENCY: { id: "1", label: "Emergency!", displayName: "emergency 😓" }
 }
 
+
 export const ConsistencyType = {
     FORMED: { id: "1", label: "Formed", displayName: "Formed" },
     SOFT: { id: "2", label: "Soft", displayName: "Soft" },
     LOOSE: { id: "3", label: "Loose", displayName: "Loose" },
     LIQUID: { id: "4", label: "Liquid", displayName: "Liquid" }
+}
+
+export const MetricType = {
+    NONE: "None",
+    LOW: "Low",
+    MODERATE: "Moderate",
+    HIGH: "High",
+    VERY_HIGH: "Very High",
+    EMERGENCY: "Emergency!",
+    
+    FORMED: "Formed",
+    SOFT: "Soft",
+    LOOSE: "Loose",
+    LIQUID: "Liquid",
 }
 
 

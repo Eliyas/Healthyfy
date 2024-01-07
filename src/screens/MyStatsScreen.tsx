@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, processColor } from "react-native";
+import { Dimensions, ImageBackground, processColor } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import { Button, Card, Checkbox, GridList, Image, Spacings, Text, View } from "react-native-ui-lib";
@@ -8,11 +8,10 @@ import { DEVICE_UNIQUE_ID_KEY, FieldLabelType, MetricType } from "../constants";
 import { GraphQLQuery } from "@aws-amplify/api";
 import { API } from 'aws-amplify';
 import * as query from "../graphql/queries";
-import { ListReportsQueryVariables } from "../API";
+import { ListReportsQueryVariables, ReportType } from "../API";
 import _ from "lodash";
 import * as SecureStore from 'expo-secure-store';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 import { Dropdown } from 'react-native-element-dropdown';
 import moment from "moment";
 import firstPageBg from "../../assets/first-page-bg.png";
@@ -21,6 +20,10 @@ import checkbox1 from "../../assets/checkbox1.png";
 import checkbox2 from "../../assets/checkbox2.png";
 import filter from "../../assets/filter.png";
 
+
+
+const window = Dimensions.get('window');
+const PAGE_HEIGHT = window.height;
 const MyStatsScreen = () => {
     const [metrics, setMetrics] = useState([
         { id: 1, name: FieldLabelType.Urgency, displayName: FieldLabelType.Urgency_Only, isChecked: false },
@@ -44,13 +47,25 @@ const MyStatsScreen = () => {
         { label: "60 Days", value: "60" },
         { label: "90 Days", value: "90" }
     ];
+    const durationValueAndLabelMap = {
+        "1": "Today",
+        "30": "30 Days",
+        "60": "60 Days",
+        "90": "90 Days",
+    };
+
     const metricKeyAndValueMap = {
         [MetricType.NONE]: 0,
         [MetricType.LOW]: 1,
         [MetricType.MODERATE]: 2,
         [MetricType.HIGH]: 3,
         [MetricType.VERY_HIGH]: 4,
-        [MetricType.EMERGENCY]: 5
+        [MetricType.EMERGENCY]: 5,
+
+        [MetricType.FORMED]: 1,
+        [MetricType.SOFT]: 2,
+        [MetricType.LOOSE]: 3,
+        [MetricType.LIQUID]: 4
     }
 
     const metricNameColorMap = {
@@ -73,6 +88,15 @@ const MyStatsScreen = () => {
             })
     }, []);
 
+    useEffect(() => {
+        SecureStore.getItemAsync(DEVICE_UNIQUE_ID_KEY)
+            .then((uuid) => {
+                console.log("uuid", uuid);
+                fetchReports(uuid, duration)
+                setDeviceId(uuid);
+            })
+    }, []);
+
     const fetchReports = async (deviceId: string, duration: string) => {
         try {
             console.log("deviceId ", deviceId)
@@ -81,6 +105,7 @@ const MyStatsScreen = () => {
             const variables: ListReportsQueryVariables = {
                 filter: {
                     profileReportsDeviceId: { eq: deviceId },
+                    type: { eq: ReportType.POO },
                     dateTime: { gt: moment().subtract(+duration, "days").toISOString() }
                 }
             }
@@ -105,8 +130,8 @@ const MyStatsScreen = () => {
         const dateKeyAndReportsMap = {};
         _.each(data, (report) => {
             // to make date into no of days. 
-            let period = moment().diff(moment(report.dateTime), 'days');
-            if (period == 0) period = 1
+            let period = moment(report.dateTime).get("date");
+            period -= 1;
             console.log("date", period);
             let metric;
             try {
@@ -154,7 +179,8 @@ const MyStatsScreen = () => {
 
         const dataSets = [];
         _.each(Object.keys(metricNameAndDataPointsMap), metricName => {
-            const values = [{ x: 0, y: 0 }, ...metricNameAndDataPointsMap[metricName], { x: 30, y: 0 }];
+            const values = [...metricNameAndDataPointsMap[metricName]];
+            console.log("values ", values);
             dataSets.push({
                 label: metricName,
                 values,
@@ -174,7 +200,7 @@ const MyStatsScreen = () => {
             })
         });
         setData({ dataSets });
-        // console.log("dataSets ", dataSets);
+        //console.log("dataSets ", dataSets);
     };
 
     const handleTagChange = (tag) => {
@@ -197,27 +223,33 @@ const MyStatsScreen = () => {
         fetchReports(deviceId, value);
     }
 
-    return <Container>
-        <View style={{
-            justifyContent: "center",
-            alignItems: "center"
+    return <ImageBackground
+        source={firstPageBg}
+        resizeMode="contain"
+        style={{
+            overflow: "hidden",
+            flex: 1
         }}>
-            <ImageBackground source={firstPageBg} resizeMode="cover" style={{ paddingTop: 10, width: "100%", height: "100%", justifyContent: 'center' }}>
-                <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
-                    <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{
-                        flex: 1
-                    }}></ImageBackground>
-                </View>
+        <SafeAreaView style={{ opacity: 0 }} />
 
-                <View row width={"100%"} style={{
-                    flexDirection: "column", height: "100%", alignItems: "center",
-                    zIndex: 20
-                }} >
+        <View style={{ flex: 1, paddingTop: 10 }}>
+            <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
+                <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{ flex: 1 }}></ImageBackground>
+            </View>
 
-                    <View style={{ display: "flex", paddingHorizontal: 10, marginBottom: 10, width: "100%" }}>
+            <View row width={"100%"} style={{
+                flexDirection: "column", height: "100%", alignItems: "center",
+                zIndex: 20
+            }} >
+
+                <View style={{
+                    display: "flex", justifyContent: "space-between", flexDirection: "row",
+                    paddingHorizontal: 10, marginBottom: 10, width: "100%"
+                }}>
+                    <View style={{ display: "flex" }}>
                         <Text style={{ fontSize: 40, fontFamily: 'Neuton-Regular', color: "#020202", width: "100%" }}>Your Stats, </Text>
-                        <View style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "row" }}>
 
+                        <View style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "row" }}>
                             <Dropdown
                                 selectedTextStyle={{ display: "none" }}
                                 data={durationOptions}
@@ -226,133 +258,143 @@ const MyStatsScreen = () => {
                                 valueField={"value"}
                                 renderRightIcon={() => (
                                     <View style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "row" }}>
-                                        <Text style={{ fontSize: 25, fontFamily: 'Neuton-Regular', color: "#020202", paddingRight: 20 }}>Today</Text>
+                                        <Text style={{ fontSize: 23, fontFamily: 'Neuton-Regular', color: "#020202", paddingRight: 20 }}>{durationValueAndLabelMap[duration]}</Text>
                                         <Image
                                             style={{ width: 15, height: 15 }}
                                             source={filter}
                                         />
                                     </View>
-
-
                                 )}
                                 onChange={handleDurationChange}
                             />
                         </View>
-
                     </View>
 
-
-                    <View style={{ width: "100%", height: 220, paddingHorizontal: 10, marginBottom: 10 }}>
-                        <Card
-                            activeOpacity={1}
-                            enableShadow={false}
-                            style={{
-                                backgroundColor: "white",
-                                borderWidth: 0,
-                                borderRadius: 0,
-                                shadowOpacity: 1,
-                                shadowRadius: 0,
-                                paddingHorizontal: 10,
-                                height: 220,
-                                width: "100%",
-                            }}
-                            enableBlur={false}
-                            paddingH-10
-                            paddingV-20
-                        >
-                            <LineChart style={{ flexGrow: 1 }}
-                                borderColor={processColor("#bfbfbf")}
-                                borderWidth={2}
-                                drawBorders={true}
-                                chartDescription={{ text: '' }}
-                                marker={{
-                                    enabled: true,
-                                    markerColor: processColor('#F0C0FF8C'),
-                                    textColor: processColor('white'),
-                                    markerFontSize: 14
-                                }}
-                                xAxis={{ position: "BOTTOM", drawAxisLine: false, granularityEnabled: true, granularity: 1 }}
-                                yAxis={{
-                                    limitLines: [{ lineColor: 0 }],
-                                    axisLineColor: 0,
-                                    left: {
-                                        granularityEnabled: true,
-                                        granularity: 1,
-                                        drawAxisLine: false,
-                                    },
-                                    right: {
-                                        granularityEnabled: true,
-                                        granularity: 1,
-                                        drawLabels: false,
-                                        drawAxisLine: false,
-                                    },
-                                }}
-                                data={data}
-                            />
-                        </Card>
+                    <View style={{display: "flex", justifyContent: "center" }}>
+                        <Image
+                            style={{ width: 40, height: 40 }}
+                            source={require('../../assets/menu2.png')}
+                        />
                     </View>
-
-                    <View style={{ width: "100%", paddingHorizontal: 10 }}>
-                        <Text style={{ color: "#020202", fontWeight: "400", fontFamily: "Poppins-Medium", fontSize: 23 }}>
-                            Please select from following factors
-                        </Text>
-                    </View>
-
-                    <GridList
-                        data={metrics}
-                        numColumns={3}
-                        style={{ padding: 0 }}
-                        renderItem={({ item }) => (
-                            <View key={item.id}>
-                                <Button
-                                    borderRadius={0}
-                                    $textDefault
-                                    onPress={() => handleTagChange(item)}
-                                    style={{
-                                        height: 90, backgroundColor: item.isChecked ? "#020202" : "#0202020D", borderRadius: 15,
-                                        borderColor: "#5C5A57", borderWidth: 0, justifyContent: "space-between", flexDirection: "column"
-                                    }}
-                                >
-                                    <View style={{ width: "100%", display: "flex", alignItems: "flex-end" }}>
-                                        <Checkbox
-                                            style={{ display: "none" }}
-                                            value={item.isChecked}
-                                            borderRadius={100}
-                                            color="#5C5A57"
-                                            onValueChange={() => handleTagChange(item)}
-                                        />
-
-                                        {
-                                            item.isChecked ? <Image
-                                                style={{ width: 15, height: 15 }}
-                                                source={checkbox1}
-                                            /> :
-                                                <Image
-                                                    style={{ width: 15, height: 15 }}
-                                                    source={checkbox2}
-                                                />
-                                        }
-
-                                    </View>
-
-                                    <Text style={{
-                                        fontWeight: "400", fontFamily: "Poppins-Medium",
-                                        justifyContent: "center", fontSize: 15,
-                                        textAlign: "center", color: item.isChecked ? "#FEFEFE" : "#020202"
-                                    }}>
-                                        {item.displayName}
-                                    </Text>
-                                </Button>
-                            </View>
-                        )}
-                        itemSpacing={Spacings.s3}
-                        listPadding={Spacings.s3}
-                    />
-
                 </View>
-            </ImageBackground>
+
+
+                <View style={{ width: "100%", height: 220, paddingHorizontal: 10, marginBottom: 10 }}>
+                    <Card
+                        activeOpacity={1}
+                        enableShadow={false}
+                        style={{
+                            backgroundColor: "white",
+                            borderWidth: 0,
+                            borderRadius: 0,
+                            shadowOpacity: 1,
+                            shadowRadius: 0,
+                            paddingHorizontal: 10,
+                            height: 220,
+                            width: "100%",
+                        }}
+                        enableBlur={false}
+                        paddingH-10
+                        paddingV-20
+                    >
+                        <LineChart style={{ flexGrow: 1 }}
+                            borderColor={processColor("#bfbfbf")}
+                            borderWidth={2}
+                            drawBorders={true}
+                            chartDescription={{ text: '' }}
+                            marker={{
+                                enabled: true,
+                                markerColor: processColor('#F0C0FF8C'),
+                                textColor: processColor('white'),
+                                markerFontSize: 14
+                            }}
+                            xAxis={{
+                                position: "BOTTOM", drawAxisLine: false, granularityEnabled: true,
+                                granularity: 1, valueFormatter: 'date', timeUnit: 'DAYS',
+                                valueFormatterPattern: 'dd MMM',
+                            }}
+                            yAxis={{
+                                limitLines: [{ lineColor: 0 }],
+                                axisLineColor: 0,
+                                left: {
+                                    granularityEnabled: true,
+                                    granularity: 1,
+                                    drawAxisLine: false,
+                                },
+                                right: {
+                                    granularityEnabled: true,
+                                    granularity: 1,
+                                    drawLabels: false,
+                                    drawAxisLine: false,
+                                },
+                            }}
+                            data={data}
+                        />
+                    </Card>
+                </View>
+
+                <View style={{ width: "100%", paddingHorizontal: 10 }}>
+                    <Text style={{ color: "#020202", fontWeight: "400", fontFamily: "Poppins-Medium", fontSize: 23 }}>
+                        Please select from following factors
+                    </Text>
+                </View>
+
+                <GridList
+                    data={metrics}
+                    numColumns={3}
+                    style={{ padding: 0 }}
+                    renderItem={({ item }) => (
+                        <View key={item.id}>
+                            <Button
+                                borderRadius={0}
+                                $textDefault
+                                onPress={() => handleTagChange(item)}
+                                style={{
+                                    height: 90, backgroundColor: item.isChecked ? "#020202" : "#0202020D", borderRadius: 15,
+                                    borderColor: "#5C5A57", borderWidth: 0, justifyContent: "space-between", flexDirection: "column"
+                                }}
+                            >
+                                <View style={{ width: "100%", display: "flex", alignItems: "flex-end" }}>
+                                    <Checkbox
+                                        style={{ display: "none" }}
+                                        value={item.isChecked}
+                                        borderRadius={100}
+                                        color="#5C5A57"
+                                        onValueChange={() => handleTagChange(item)}
+                                    />
+
+                                    {
+                                        item.isChecked ? <Image
+                                            style={{ width: 15, height: 15 }}
+                                            source={checkbox1}
+                                        /> :
+                                            <Image
+                                                style={{ width: 15, height: 15 }}
+                                                source={checkbox2}
+                                            />
+                                    }
+
+                                </View>
+
+                                <Text style={{
+                                    fontWeight: "400", fontFamily: "Poppins-Medium",
+                                    justifyContent: "center", fontSize: 15,
+                                    textAlign: "center", color: item.isChecked ? "#FEFEFE" : "#020202"
+                                }}>
+                                    {item.displayName}
+                                </Text>
+                            </Button>
+                        </View>
+                    )}
+                    itemSpacing={Spacings.s3}
+                    listPadding={Spacings.s3}
+                />
+
+            </View>
         </View>
-    </Container>
+
+        {/* <SafeAreaView style={{ opacity: 0 }} /> */}
+    </ImageBackground>
 }
 
 export default MyStatsScreen;

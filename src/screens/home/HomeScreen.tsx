@@ -27,7 +27,7 @@ const DATA = [
   },
   {
     id: "2",
-    title: "Practical Advice",
+    title: "Recommendations",
     route: "MyUCHealingRecommendations",
     isChecked: false
   },
@@ -141,7 +141,6 @@ export default function HomeScreen() {
         <View style={{ flex: 1, display: "flex", paddingVertical: 40, paddingTop: 20, paddingHorizontal: 20, zIndex: 12 }}>
 
           <HeaderViewContainer>
-
             <View>
               <Text style={{ fontSize: 40, fontFamily: 'Neuton-Regular', color: "#020202", width: "100%" }}>Hello 👋, </Text>
               <Text style={{ fontSize: 20, fontFamily: 'Neuton-Regular', color: "#020202", width: "100%" }}>To My UC Healing Journey</Text>
@@ -230,7 +229,7 @@ export default function HomeScreen() {
                 </View>
               </Card>
 
-              <View>
+              <View style={{ marginTop: 10 }}>
                 <Button
                   outline
                   borderRadius={0}
@@ -245,13 +244,15 @@ export default function HomeScreen() {
                   style={{
                     height: 53, backgroundColor: isMyStateActive ? "#020202" : "#0202020D",
                     borderColor: "#5C5A57", borderWidth: 0, marginBottom: 5,
-                    width: "100%", justifyContent: "center", borderRadius: 15, marginTop: 15
+                    width: "100%", justifyContent: "center", borderRadius: 15, marginTop: 10
                   }}
                 />
               </View>
+
             </View>
 
-            <View row marginV-5 width={"100%"} style={{ flexDirection: "column" }}>
+
+            <View row width={"100%"} style={{ flexDirection: "column" }}>
               <View width={"100%"} style={{ marginHorizontal: 5 }}>
                 <Text style={{ color: "#020202", fontFamily: "Poppins-Medium", fontSize: 22, marginBottom: 10 }}>
                   What would you like to do today?

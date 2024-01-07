@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ImageBackground, FlatList } from "react-native";
-import { Card, Text, View, Button } from "react-native-ui-lib";
+import { Card, Text, View, Button, Image, TouchableOpacity } from "react-native-ui-lib";
 import firstPageBg from "../../assets/first-page-bg.png";
 import { FontAwesome } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RedirectionType } from "../utils/config";
 import _ from "lodash";
-
+import { SafeAreaView } from "react-native-safe-area-context";
+import pageBg from "../../assets/first-page.png";
 
 const reports = [
     {
@@ -47,7 +48,7 @@ const reports = [
 
 export default function ReportPopup() {
     const [allReports, setAllReports] = useState(reports);
-    const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+    const { navigate, goBack }: NavigationProp<TabNavigationType> = useNavigation();
 
     useEffect(() => {
         setTimeout(() => {
@@ -76,19 +77,41 @@ export default function ReportPopup() {
         setAllReports([...allReports]);
     }
 
-    return (
-        <View style={{
-            flex: 1,
-            height: "100%",
-            alignItems: "center",
-            width: "100%"
-        }}>
-            <ImageBackground resizeMethod="resize" source={firstPageBg} resizeMode="cover" style={{
-                width: "100%", justifyContent: 'center', height: "100%", alignItems: 'center'
+    return (<ImageBackground
+        source={firstPageBg}
+        resizeMode="contain"
+        style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={{ flex: 1, paddingTop: 10, paddingHorizontal: 20 }}>
+            <SafeAreaView style={{ opacity: 0 }} />
+
+            <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
+                <ImageBackground source={pageBg} resizeMode="contain" width={50} height={50} style={{ flex: 1 }}></ImageBackground>
+            </View>
+
+            <View style={{ display: "flex", marginBottom: 25, marginTop: 10, justifyContent: "space-between", flexDirection: "row", zIndex: 12 }}>
+                <TouchableOpacity onPress={goBack}>
+                    <Image
+                        style={{ width: 53, height: 53 }}
+                        source={require('../../assets/back-icon.png')}
+                    />
+                </TouchableOpacity>
+
+                <Image
+                    style={{ width: 53, height: 53 }}
+                    source={require('../../assets/menu2.png')}
+                />
+            </View>
+
+
+            <View style={{
+                display: "flex", flexDirection: "row", justifyContent: "space-between",
+                zIndex: 12, backgroundColor: "transparent"
             }}>
-                <View style={{
-                    paddingHorizontal: 20
-                }}>
+                <ImageBackground
+                    source={firstPageBg}
+                    resizeMode="cover"
+                    style={{ flex: 1, justifyContent: 'center' }}>
+                    
                     <Card
                         activeOpacity={1}
                         enableShadow={false}
@@ -148,8 +171,13 @@ export default function ReportPopup() {
                             showsHorizontalScrollIndicator={false}
                         />
                     </Card>
-                </View>
-            </ImageBackground>
+
+                </ImageBackground>
+            </View>
+
+            <SafeAreaView style={{ opacity: 0 }} />
         </View>
+
+    </ImageBackground>
     )
 }

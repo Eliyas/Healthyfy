@@ -14,6 +14,7 @@ import {
   Checkbox,
   TextField,
   Image,
+  TouchableOpacity,
 } from "react-native-ui-lib";
 import { DEVICE_UNIQUE_ID_KEY, FieldLabelType } from "../../constants";
 import {
@@ -23,7 +24,6 @@ import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
 import { CreateTagInput, DeleteTagInput } from "../../API";
-import moment from "moment";
 import * as mutation from "../../graphql/mutations";
 import * as query from "../../graphql/queries";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -36,13 +36,15 @@ import firstPageBg from "../../../assets/uc-bg.png";
 import pageBg from "../../../assets/first-page.png";
 import DateTimeField from "../../components/DateTimeUCComponent";
 import * as SecureStore from 'expo-secure-store';
+import Toast from "../../components/Toast";
+import moment from "moment";
 
 const config: any = {
-  mode: "stack-vertical-left",
+  mode: "parallax",
   snapDirection: "left",
   pagingEnabled: true,
   loop: false,
-  snapEnabled: false,
+  snapEnabled: true,
   autoPlay: false,
   autoPlayReverse: false,
 };
@@ -101,6 +103,8 @@ const DATA = [
 ];
 let fuse: any;
 
+const window = Dimensions.get('window');
+const PAGE_WIDTH = window.width;
 export default function UCLoggingScreen() {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
@@ -122,13 +126,12 @@ export default function UCLoggingScreen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [toastInfo, setToastInfo] = useState({
     isSuccess: false,
-    message: "",
-    isShowToast: false
+    message: ""
   });
   const [profileId, setProfileId] = useState("");
   const carouselRef: any = useRef();
   const width = Dimensions.get('window').width;
-  const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+  const { navigate, goBack }: NavigationProp<TabNavigationType> = useNavigation();
   const viewCount = 5;
 
   const fieldLabelSetStateMap = {
@@ -143,19 +146,12 @@ export default function UCLoggingScreen() {
   }
 
   useEffect(() => {
-    console.log("timout calling")
-    setTimeout(() => {
-      setToastInfo({ ...toastInfo, isShowToast: false });
-    }, 3000);
-  }, [toastInfo.isShowToast]);
-
-  useEffect(() => {
     SecureStore.getItemAsync(DEVICE_UNIQUE_ID_KEY)
-    .then((id) => {
-      console.log("uuid", id);
-      setProfileId(id);
-      fetchTags(id);
-    });
+      .then((id) => {
+        console.log("uuid", id);
+        setProfileId(id);
+        fetchTags(id);
+      });
   }, []);
 
   const nextSlide = () => {
@@ -203,7 +199,7 @@ export default function UCLoggingScreen() {
       fuse = new Fuse(response.data.listTags.items, { includeScore: true, keys: ['name'] });
     } catch (err) {
       console.error("Failed to fetch tags");
-      console.error(err);
+      console.error(err.errors ? err.errors : err);
     }
   }
 
@@ -300,6 +296,7 @@ export default function UCLoggingScreen() {
   }
 
   const handleOnSubmit = async () => {
+    console.log("submit")
     console.log("Date ", date);
     console.log("time ", time);
     const dateIso = new Date(date).toISOString();
@@ -354,11 +351,11 @@ export default function UCLoggingScreen() {
       });
       await Promise.all(promises);
       console.log(" Success")
-      setToastInfo({ isShowToast: true, message: "Report save successfully", isSuccess: true });
+      setToastInfo({ message: "Report save successfully", isSuccess: true });
       navigate("Home");
     } catch (err) {
       console.error("Failed to create report");
-      setToastInfo({ isShowToast: true, message: "Failed to create report. Please try after sometime", isSuccess: false });
+      setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false });
       console.error(err);
     }
 
@@ -431,10 +428,12 @@ export default function UCLoggingScreen() {
         />
       </View>
 
-      {toastInfo.isShowToast && <Text style={{
+      {/* {toastInfo.isShowToast && <Text style={{
         width: "100%", paddingVertical: 10, paddingHorizontal: 10, color: "white", fontSize: 17, fontWeight: "400",
         backgroundColor: toastInfo.isSuccess ? Colors.green30 : Colors.red30
-      }}>{toastInfo.message}</Text>}
+      }}>{toastInfo.message}</Text>} */}
+
+      <Toast toastInfo={toastInfo} setToastInfo={setToastInfo} />
 
     </Card>
   )
@@ -459,10 +458,13 @@ export default function UCLoggingScreen() {
           </View>
 
           <View style={{ display: "flex", marginBottom: 5, marginTop: 10, justifyContent: "space-between", flexDirection: "row", zIndex: 12 }}>
+            <TouchableOpacity onPress={goBack}>
             <Image
               style={{ width: 53, height: 53 }}
               source={require('../../../assets/back-icon.png')}
             />
+            </TouchableOpacity>
+           
             <Image
               style={{ width: 53, height: 53 }}
               source={require('../../../assets/menu2.png')}
@@ -486,22 +488,23 @@ export default function UCLoggingScreen() {
               ref={carouselRef}
               onScrollEnd={handleSlideEnd}
               style={{
+                width: PAGE_WIDTH * 0.92,
                 alignItems: "center",
                 justifyContent: "center",
                 paddingTop: 10,
-                height: 420
+                height: 420,
               }}
-              width={width}
               pagingEnabled={config.pagingEnabled}
               snapEnabled={config.snapEnabled}
-              mode={"horizontal-stack"}
+              mode={"parallax"}
               loop={config.loop}
               autoPlay={config.autoPlay}
+              width={width}
               autoPlayReverse={config.autoPlayReverse}
               data={DATA}
               modeConfig={{
-                snapDirection: config.snapDirection,
-                stackInterval: config.mode === "vertical-stack" ? 8 : 18,
+                parallaxScrollingScale: 0.9,
+                parallaxScrollingOffset: 50,
               }}
               customConfig={() => ({ type: "positive", viewCount })}
               renderItem={({ item }) => (
@@ -519,12 +522,13 @@ export default function UCLoggingScreen() {
                           borderRadius: 25,
                           height: 400,
                           marginHorizontal: 5,
-                          elevation: 10,
+                          marginLeft: 10,
+                          elevation: 3,
                           backgroundColor: "#fff7ff",
                           shadowColor: "#52006A",
-                          shadowOpacity: 0.2,
-                          shadowRadius: 3,
-                          width: "95%",
+                          shadowOpacity: 0.1,
+                          shadowRadius: 1,
+                          width: "100%",
                           alignItems: "center",
                         }}
                         enableBlur={false}

@@ -84,7 +84,7 @@ const SingleChoiceUCComponent = ({ label, subLabel, metricType, value, handleVal
                                         }}
                                         onPress={() => { handleValueSelect(label, metric.label); }}
                                         labelStyle={{
-                                            fontWeight: "400", fontSize: 16, textAlign: "center", color: value == metric.label ? "#FFFFFF" : "#020202",
+                                            fontWeight: "400", fontSize: 17, textAlign: "center", color: value == metric.label ? "#FFFFFF" : "#020202",
                                             fontFamily: "Poppins-Regular"
                                         }}
                                         label={metric.displayName}

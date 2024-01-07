@@ -1,11 +1,13 @@
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import { BLOCKS, MARKS } from '@contentful/rich-text-types';
 import React, { useState } from 'react';
-import { useWindowDimensions } from "react-native";
+import { ImageBackground, useWindowDimensions } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, View } from "react-native-ui-lib";
+import { Image, Text, TouchableOpacity, View } from "react-native-ui-lib";
 import useContentful from "../../hooks/useContentful";
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import firstPageBg from "../../../assets/first-page-bg.png";
 
 const contentFulToReactNative = {
     renderMark: {
@@ -97,6 +99,7 @@ const contentFulToReactNative = {
 
 const MyUCHealingRecommendations = () => {
     const content = useContentful({ entry: "2G70naMngD5uS7AcoyBs7d", contentType: "UCHealthAppContent" });
+    const { goBack }: NavigationProp<TabNavigationType> = useNavigation();
     let title = "";
     let richTextDocument1: any = {};
     if (!content) {
@@ -112,17 +115,27 @@ const MyUCHealingRecommendations = () => {
     const RenderHtml = () => documentToReactComponents(richTextDocument1, contentFulToReactNative)
 
     return (
-        <SafeAreaView style={{ flex: 1, paddingHorizontal: 15 }}>
-            <ScrollView style={{ height: 500 }} automaticallyAdjustKeyboardInsets={true}>
-                <Text style={{
-                    marginTop: 25, marginBottom: 20,
-                    fontSize: 30, fontFamily: 'Neuton-Regular', fontWeight: "400",
-                    color: "#020202", width: "100%"
-                }}>{title}</Text>
-                <RenderHtml />
-            </ScrollView>
-        </SafeAreaView>
+        <ImageBackground source={firstPageBg} resizeMode="cover" style={{ flex: 1, justifyContent: 'center' }}>
+            <SafeAreaView style={{ flex: 1, paddingHorizontal: 15 }}>
+                <ScrollView style={{ height: 500 }} automaticallyAdjustKeyboardInsets={true}>
+                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <Text style={{
+                            marginTop: 25, marginBottom: 20,
+                            fontSize: 25, fontFamily: 'Neuton-Regular', fontWeight: "400",
+                            color: "#020202"
+                        }}>{title}</Text>
+                        <TouchableOpacity onPress={goBack}>
+                            <Image
+                                style={{ width: 35, height: 35 }}
+                                source={require('../../../assets/back-icon.png')}
+                            />
+                        </TouchableOpacity>
+                    </View>
 
+                    <RenderHtml />
+                </ScrollView>
+            </SafeAreaView>
+        </ImageBackground>
     );
 }
 
