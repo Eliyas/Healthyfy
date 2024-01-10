@@ -14,7 +14,6 @@ import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Toast from "../../components/Toast";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 
@@ -23,12 +22,7 @@ export default function WeightReport() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [profileId, setProfileId] = useState("");
     const [weight, setWeight] = useState("");
-    const { goBack }: NavigationProp<TabNavigationType> = useNavigation();
-    const [toastInfo, setToastInfo] = useState({
-        isSuccess: false,
-        message: "",
-        navigatePath: ""
-    });
+    const { goBack, navigate }: NavigationProp<TabNavigationType> = useNavigation();
 
     useEffect(() => {
         if (isSubmitted) {
@@ -62,10 +56,9 @@ export default function WeightReport() {
                 });
             console.log(" Success", reportResponse);
             setIsSubmitted(false);
-            setToastInfo({ message: "Report created successfully", isSuccess: true, navigatePath: "Home" });
+            navigate("SuccessScreen");
         } catch (err) {
             console.error("Failed to create report");
-            setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false, navigatePath: "" });
             console.error(err);
         }
 
@@ -171,7 +164,6 @@ export default function WeightReport() {
                                     />
                                 </View>
 
-                                <Toast toastInfo={toastInfo} setToastInfo={setToastInfo} />
                             </View>
 
                         </Card>

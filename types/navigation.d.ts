@@ -13,6 +13,7 @@ type TabNavigationType = {
   Home: undefined;
   MyStats: undefined;
   ReportModal: undefined;
+  SuccessScreen: undefined;
 };
 
 //tabs nav types

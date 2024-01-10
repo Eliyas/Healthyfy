@@ -36,7 +36,6 @@ import firstPageBg from "../../../assets/uc-bg.png";
 import pageBg from "../../../assets/first-page.png";
 import DateTimeField from "../../components/DateTimeUCComponent";
 import * as SecureStore from 'expo-secure-store';
-import Toast from "../../components/Toast";
 import moment from "moment";
 
 const config: any = {
@@ -124,17 +123,12 @@ export default function UCLoggingScreen() {
   const [isTagEditMode, setIsTagEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [toastInfo, setToastInfo] = useState({
-    isSuccess: false,
-    message: "",
-    navigatePath: "",
-  });
   const [profileId, setProfileId] = useState("");
   const carouselRef: any = useRef();
   const width = Dimensions.get('window').width;
-  const { goBack }: NavigationProp<TabNavigationType> = useNavigation();
   const viewCount = 5;
-
+  const { goBack, navigate }: NavigationProp<TabNavigationType> = useNavigation();
+  
   const fieldLabelSetStateMap = {
     [FieldLabelType.Blood]: setBlood,
     [FieldLabelType.Urgency]: setUrgency,
@@ -351,11 +345,10 @@ export default function UCLoggingScreen() {
           })
       });
       await Promise.all(promises);
+      navigate("SuccessScreen");
       console.log(" Success")
-      setToastInfo({ message: "Report save successfully", isSuccess: true, navigatePath: "Home" });
     } catch (err) {
       console.error("Failed to create report");
-      setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false, navigatePath: "" });
       console.error(err);
     }
 
@@ -427,8 +420,6 @@ export default function UCLoggingScreen() {
           style={{ borderWidth: 0, borderRadius: 25, paddingVertical: 10, marginBottom: 13 }}
         />
       </View>
-
-      <Toast toastInfo={toastInfo} setToastInfo={setToastInfo} />
 
     </Card>
   )

@@ -10,6 +10,7 @@ import ReportPopup from "../components/ReportPopup";
 import MyUCHealingRecommendations from "../screens/home/MyUCHealingRecommendations";
 import WeightReport from "../screens/reports/WeightReport";
 import MoodReport from "../screens/reports/MoodReport";
+import SuccessScreen from "../screens/SuccessScreen";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ export default function RootNavigation() {
        <Stack.Screen name="MyUCHealingRecommendations" component={MyUCHealingRecommendations} />
        <Stack.Screen name="WeightReport" component={WeightReport} />
        <Stack.Screen name="MoodReport" component={MoodReport} />
+       <Stack.Screen name="SuccessScreen" component={SuccessScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

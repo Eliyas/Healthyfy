@@ -15,7 +15,6 @@ import { API } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import _ from "lodash";
-import Toast from "../../components/Toast";
 
 
 export default function MoodReport() {
@@ -23,12 +22,7 @@ export default function MoodReport() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [profileId, setProfileId] = useState("");
     const [moods, setMoods] = useState(Object.values(MoodTypes));
-    const { goBack }: NavigationProp<TabNavigationType> = useNavigation();
-    const [toastInfo, setToastInfo] = useState({
-        isSuccess: false,
-        message: "",
-        navigatePath: ""
-    });
+    const { goBack, navigate }: NavigationProp<TabNavigationType> = useNavigation();
 
     useEffect(() => {
         if (isSubmitted) {
@@ -66,10 +60,9 @@ export default function MoodReport() {
                 });
             console.log(" Success", reportResponse);
             setIsSubmitted(false);
-            setToastInfo({ message: "Report created successfully", isSuccess: true, navigatePath: "Home" });
+            navigate("SuccessScreen");
         } catch (err) {
             console.error("Failed to create report");
-            setToastInfo({ message: "Failed to create report. Please try after sometime", isSuccess: false, navigatePath: "" });
             console.error(err);
         }
 
@@ -174,8 +167,6 @@ export default function MoodReport() {
                                         label="Submit"
                                     />
                                 </View>
-
-                                <Toast toastInfo={toastInfo} setToastInfo={setToastInfo} />
 
                             </View>
 
