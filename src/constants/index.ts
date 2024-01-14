@@ -41,7 +41,7 @@ export const MetricType = {
     HIGH: "High",
     VERY_HIGH: "Very High",
     EMERGENCY: "Emergency!",
-    
+
     FORMED: "Formed",
     SOFT: "Soft",
     LOOSE: "Loose",
@@ -65,3 +65,20 @@ export const MoodTypes = {
 }
 
 export const DEVICE_UNIQUE_ID_KEY = "DEVICE_UNIQUE_ID_KEY";
+
+export const SUCCESS_SCREEN_MESSAGES = {
+    REPORT_CREATE: {
+        heading: "Good Job 👌",
+        messageTop: "You have submitted your report successfully!",
+        messageBottom: "we hope you ll cure soon and ll be back to happy and normal life 😍",
+        redirect: "Home",
+        type: "REPORT_CREATE"
+    },
+    DATA_DELETE: {
+        heading: "All Your Data Deleted",
+        messageTop: "We respect your privacy🙂",
+        messageBottom: "we hope you ll cure soon and ll be back to happy and normal life 😍",
+        redirect: "UCTerms",
+        type: "DATA_DELETE"
+    },
+}

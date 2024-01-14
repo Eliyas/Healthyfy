@@ -11,6 +11,8 @@ import MyUCHealingRecommendations from "../screens/home/MyUCHealingRecommendatio
 import WeightReport from "../screens/reports/WeightReport";
 import MoodReport from "../screens/reports/MoodReport";
 import SuccessScreen from "../screens/SuccessScreen";
+import MyDataPrivacy from "../screens/MyDataPrivacy";
+import UCTerms from "../screens/UCTerms";
 
 const Stack = createStackNavigator();
 
@@ -27,6 +29,7 @@ export default function RootNavigation() {
           gestureDirection: "horizontal",
         }}
       >
+       <Stack.Screen name="UCTerms" component={UCTerms} />
        <Stack.Screen name="Home" component={HomeScreen} />
        <Stack.Screen name="UCLogging" component={UCLoggingScreen} />
        <Stack.Screen name="MyStats" component={MyStatsScreen} />
@@ -35,6 +38,7 @@ export default function RootNavigation() {
        <Stack.Screen name="WeightReport" component={WeightReport} />
        <Stack.Screen name="MoodReport" component={MoodReport} />
        <Stack.Screen name="SuccessScreen" component={SuccessScreen} />
+       <Stack.Screen name="MyDataPrivacy" component={MyDataPrivacy} />
       </Stack.Navigator>
     </NavigationContainer>
   );

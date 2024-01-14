@@ -9,7 +9,7 @@ import styled from "styled-components/native";
 import { CreateReportInput, CreateReportMutation, ReportType } from "../../API";
 import moment from "moment";
 import * as SecureStore from 'expo-secure-store';
-import { DEVICE_UNIQUE_ID_KEY, MoodTypes } from "../../constants";
+import { DEVICE_UNIQUE_ID_KEY, MoodTypes, SUCCESS_SCREEN_MESSAGES } from "../../constants";
 import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
@@ -22,7 +22,7 @@ export default function MoodReport() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [profileId, setProfileId] = useState("");
     const [moods, setMoods] = useState(Object.values(MoodTypes));
-    const { goBack, navigate }: NavigationProp<TabNavigationType> = useNavigation();
+    const { goBack, navigate }: NavigationProp<any> = useNavigation();
 
     useEffect(() => {
         if (isSubmitted) {
@@ -60,7 +60,7 @@ export default function MoodReport() {
                 });
             console.log(" Success", reportResponse);
             setIsSubmitted(false);
-            navigate("SuccessScreen");
+            navigate("SuccessScreen", { messageType: SUCCESS_SCREEN_MESSAGES.REPORT_CREATE.type });
         } catch (err) {
             console.error("Failed to create report");
             console.error(err);

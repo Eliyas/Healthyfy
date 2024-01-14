@@ -16,9 +16,9 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native-ui-lib";
-import { DEVICE_UNIQUE_ID_KEY, FieldLabelType } from "../../constants";
+import { DEVICE_UNIQUE_ID_KEY, FieldLabelType, SUCCESS_SCREEN_MESSAGES } from "../../constants";
 import {
-  CreateReportInput, CreateReportMutation, CreateTagMutationVariables, GetProfileQueryVariables, ListTagsQueryVariables, ModelTagFilterInput, ReportType
+  CreateReportInput, CreateReportMutation, ListTagsQueryVariables, ReportType
 } from "../../API";
 import { GraphQLQuery } from '@aws-amplify/api';
 import { API } from 'aws-amplify';
@@ -104,6 +104,7 @@ let fuse: any;
 
 const window = Dimensions.get('window');
 const PAGE_WIDTH = window.width;
+
 export default function UCLoggingScreen() {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
@@ -115,9 +116,7 @@ export default function UCLoggingScreen() {
   const [gas, setGas] = useState("");
   const [pain, setPain] = useState("");
   const [nausea, setNausea] = useState("");
-  const [tagSearchText, setTagSearchText] = useState("");
   const [isAutoFullSlideOver, setIsAutoFullSlideOver] = useState(false);
-  const [valueTest, setValueTest] = useState("");
   const [currentTagEdit, setCurrentTagEdit] = useState({ id: "", name: "" });
   const [tags, setTags] = useState([]);
   const [isTagEditMode, setIsTagEditMode] = useState(false);
@@ -127,8 +126,8 @@ export default function UCLoggingScreen() {
   const carouselRef: any = useRef();
   const width = Dimensions.get('window').width;
   const viewCount = 5;
-  const { goBack, navigate }: NavigationProp<TabNavigationType> = useNavigation();
-  
+  const { goBack, navigate }: NavigationProp<any> = useNavigation();
+
   const fieldLabelSetStateMap = {
     [FieldLabelType.Blood]: setBlood,
     [FieldLabelType.Urgency]: setUrgency,
@@ -280,7 +279,6 @@ export default function UCLoggingScreen() {
     } else {
       setTags(_.map(result, tag => tag.item));
     }
-    setTagSearchText(value);
   };
 
   const handleValueSelect = (label, value) => {
@@ -345,7 +343,7 @@ export default function UCLoggingScreen() {
           })
       });
       await Promise.all(promises);
-      navigate("SuccessScreen");
+      navigate("SuccessScreen", { messageType: SUCCESS_SCREEN_MESSAGES.REPORT_CREATE.type });
       console.log(" Success")
     } catch (err) {
       console.error("Failed to create report");
@@ -393,7 +391,10 @@ export default function UCLoggingScreen() {
       key={item.id}
     >
       <View width={"100%"}>
-        <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 30, textAlign: "center", paddingVertical: 40, }}>Submit the report?</Text>
+        <Text style={{
+          fontSize: 20, fontWeight: "700", marginBottom: 30,
+          textAlign: "center", paddingVertical: 40
+        }}>Submit the report?</Text>
         <Button
           fullWidth
           borderRadius={25}
@@ -427,7 +428,7 @@ export default function UCLoggingScreen() {
   return (
     <ImageBackground
       source={firstPageBg}
-      resizeMode="contain"
+      resizeMode="cover"
       style={{
         overflow: "hidden",
         flex: 1
@@ -445,12 +446,12 @@ export default function UCLoggingScreen() {
 
           <View style={{ display: "flex", marginBottom: 5, marginTop: 10, justifyContent: "space-between", flexDirection: "row", zIndex: 12 }}>
             <TouchableOpacity onPress={goBack}>
-            <Image
-              style={{ width: 53, height: 53 }}
-              source={require('../../../assets/back-icon.png')}
-            />
+              <Image
+                style={{ width: 53, height: 53 }}
+                source={require('../../../assets/back-icon.png')}
+              />
             </TouchableOpacity>
-           
+
             <Image
               style={{ width: 53, height: 53 }}
               source={require('../../../assets/menu2.png')}
@@ -550,7 +551,6 @@ export default function UCLoggingScreen() {
                           label={item.label} value={nausea} handleValueSelect={handleValueSelect} />}
 
                       </Card>
-
                       :
                       <Card
                         activeOpacity={1}
@@ -563,7 +563,7 @@ export default function UCLoggingScreen() {
                           shadowColor: "#52006A",
                           shadowOpacity: 0.2,
                           shadowRadius: 3,
-                          width: "95%",
+                          width: "100%",
                           justifyContent: "center",
                           alignItems: "center",
                         }}

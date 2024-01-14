@@ -103,9 +103,11 @@ const MyUCHealingRecommendations = () => {
     let title = "";
     let richTextDocument1: any = {};
     if (!content) {
-        return <View style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Text style={{}}>Loading...</Text>
-        </View>
+        return <ImageBackground source={firstPageBg} resizeMode="cover" style={{ flex: 1, justifyContent: 'center' }}>
+            <View style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <Text style={{}}>Loading...</Text>
+            </View>
+        </ImageBackground>
     }
     if (content[0] && content[0][0]?.fields?.content) {
         title = content[0][0]?.fields.title;

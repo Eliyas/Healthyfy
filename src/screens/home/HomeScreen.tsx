@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, TouchableOpacity, Image, processColor, ImageBackground, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import { Button, Card, Modal, Text, View } from "react-native-ui-lib";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp, useIsFocused, useNavigation } from "@react-navigation/native";
 import { LineChart } from 'react-native-charts-wrapper';
 import * as SecureStore from 'expo-secure-store';
 import { GraphQLQuery } from '@aws-amplify/api';
@@ -34,23 +34,28 @@ const DATA = [
   {
     id: "3",
     title: "My data privacy",
-    isChecked: false
+    isChecked: false,
+    route: "MyDataPrivacy"
   },
 ];
 
 export default function HomeScreen() {
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+  const focus = useIsFocused(); 
   const [isMyStateActive, setIsMyStateActive] = useState(false);
   const [menuOption, setMenuOption] = useState(DATA);
   const [activeLink, setActiveLink] = useState<any>("");
 
   useEffect(() => {
-    initDeviceId();
-  }, []);
+    if(focus == true) {
+      console.log("focus", focus);
+      initDeviceId();
+    }
+  }, [focus]);
 
   const initDeviceId = async () => {
     let uuid = uuidv4();
-    let fetchUUID = await SecureStore.getItemAsync(DEVICE_UNIQUE_ID_KEY);
+    let fetchUUID = await getFromSecureStore(DEVICE_UNIQUE_ID_KEY);
     console.log("fetchUUID", fetchUUID);
     //if user has already signed up prior
     if (fetchUUID) { uuid = fetchUUID }
@@ -59,8 +64,19 @@ export default function HomeScreen() {
     fetchProfile(uuid);
   }
 
+  const getFromSecureStore = async (key) => {
+    let attempts = 0;
+    while (attempts < 5) {
+        try {
+            return await SecureStore.getItemAsync(key);
+        } catch (error) {
+            attempts++;
+        }
+    }
+    return null;
+};
+
   useEffect(() => {
-    console.log("callsed 1");
     setTimeout(() => {
       if (activeLink) {
         navigate(activeLink);
@@ -73,10 +89,10 @@ export default function HomeScreen() {
 
 
   useEffect(() => {
-    console.log("callsed 3");
     setTimeout(() => {
       const item: any = _.find(menuOption, { isChecked: true });
       if (item) {
+        console.log("item.route", item.route);
         setActiveLink(item.route);
         _.each(menuOption, report => { report.isChecked = false });
         setMenuOption(menuOption);
@@ -103,6 +119,8 @@ export default function HomeScreen() {
             variables: input
           });
         console.log("newProfile ", newProfile);
+        console.log("reports ", newProfile.data.createProfile.reports);
+        console.log("tags ", newProfile.data.createProfile.tags);
       }
     } catch (err) {
       console.error(err);
@@ -114,6 +132,7 @@ export default function HomeScreen() {
       report.isChecked = false
     });
     report.isChecked = true;
+    console.log("report", report);
     setMenuOption([...menuOption]);
   }
 

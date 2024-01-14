@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ImageBackground, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -7,15 +7,30 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import firstPageBg from "../../assets/first-page-bg.png";
 import pageBg from "../../assets/first-page.png";
 import _ from "lodash";
+import { SUCCESS_SCREEN_MESSAGES } from "../constants";
+import ConfettiCannon from 'react-native-confetti-cannon';
 
-export default function SuccessScreen() {
+export default function SuccessScreen({ route }) {
   const { navigate }: NavigationProp<TabNavigationType> = useNavigation();
+  const [messageInfo, setMessageInfo] = useState<any>({ redirect: "", heading: "", messageTop: "", messageBottom: "", type: "" });
+
+  useEffect(() => {
+    console.log("routeParam", route?.params?.messageType);
+    if (route?.params?.messageType && SUCCESS_SCREEN_MESSAGES[route?.params?.messageType]) {
+      setMessageInfo(SUCCESS_SCREEN_MESSAGES[route?.params?.messageType]);
+    }
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
-      navigate("Home");
-    }, 4000)
-  }, []);
+      console.log("messageInfo.redirect", messageInfo.redirect);
+      if (messageInfo.redirect) {
+        navigate(messageInfo.redirect);
+        setMessageInfo({ redirect: "", heading: "", messageTop: "", messageBottom: "", type: "" });
+      }
+    }, 4000);
+    console.log("routing to", messageInfo.redirect);
+  }, [messageInfo.redirect]);
 
   return (
     <ImageBackground
@@ -25,11 +40,11 @@ export default function SuccessScreen() {
         overflow: "hidden",
         flex: 1
       }}>
+      {![SUCCESS_SCREEN_MESSAGES.DATA_DELETE].includes(messageInfo.type) && <ConfettiCannon fallSpeed={4000} count={200} origin={{ x: -10, y: 0 }} />}
       <View style={{
         flex: 1, justifyContent: "center",
         alignItems: "center"
       }}>
-
         <SafeAreaView style={{ opacity: 0 }} />
 
         <View style={{ position: 'absolute', minWidth: 350, minHeight: 400, top: 0, zIndex: 10 }}>
@@ -42,21 +57,23 @@ export default function SuccessScreen() {
           paddingTop: 20, paddingHorizontal: 10, zIndex: 12, height: "100%", width: "100%"
         }}>
           <View style={{}}>
-            <View style={{display: "flex", justifyContent: "flex-end", alignItems: "flex-end"}}>
+            <View style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}>
               <Image
                 style={{ width: 30, height: 30 }}
                 source={require('../../assets/menu.png')}
               />
             </View>
 
-            <View style={{  }}>
-              <Text style={{ fontSize: 35, fontFamily: 'Poppins-Medium', color: "#020202", width: "100%" }}>Good Job 👌 </Text>
-              <Text style={{ fontSize: 20, fontFamily: 'Poppins-Light', color: "#020202", width: "100%" }}>You have submitted your report successfully!</Text>
+            <View style={{}}>
+              <Text style={{ fontSize: 35, fontFamily: 'Poppins-Medium', color: "#020202", width: "100%" }}>{messageInfo.heading} </Text>
+              <Text style={{ fontSize: 20, fontFamily: 'Poppins-Light', color: "#020202", width: "100%" }}>
+                {messageInfo.messageTop}
+              </Text>
             </View>
           </View>
 
           <Text style={{ fontSize: 15, fontFamily: 'Poppins-Regular', color: "#020202", width: "100%" }}>
-            we hope you ll cure soon and ll be back to happy and normal life 😍
+            {messageInfo.messageBottom}
           </Text>
 
         </View>
