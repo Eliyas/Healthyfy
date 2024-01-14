@@ -40,7 +40,7 @@ export default function SuccessScreen({ route }) {
         overflow: "hidden",
         flex: 1
       }}>
-      {![SUCCESS_SCREEN_MESSAGES.DATA_DELETE].includes(messageInfo.type) && <ConfettiCannon fallSpeed={4000} count={200} origin={{ x: -10, y: 0 }} />}
+      {![SUCCESS_SCREEN_MESSAGES.DATA_DELETE.type].includes(messageInfo.type) && <ConfettiCannon fallSpeed={4000} count={200} origin={{ x: -10, y: 0 }} />}
       <View style={{
         flex: 1, justifyContent: "center",
         alignItems: "center"
